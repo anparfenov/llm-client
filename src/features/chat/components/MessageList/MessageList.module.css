@@ -1,0 +1,14 @@
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+  padding: 22px 0 28px;
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .messageList {
+    gap: 14px;
+  }
+}

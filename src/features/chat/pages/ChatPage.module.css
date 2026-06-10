@@ -1,0 +1,14 @@
+.chatShell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: min(100%, 920px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+@media (max-width: 640px) {
+  .chatShell {
+    padding: 12px;
+  }
+}
