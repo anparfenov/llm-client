@@ -5,3 +5,11 @@ export type Message = {
   thinking?: string;
   status?: 'pending' | 'sent' | 'error';
 };
+
+export type SavedChat = {
+  id: number;
+  title: string;
+  messages: Message[];
+  createdAt: number;
+  updatedAt: number;
+};

@@ -1,4 +1,4 @@
-import { ChatPage } from './features/chat';
+import { ChatPage } from '@chat/index';
 
 export default function App() {
   return <ChatPage />;

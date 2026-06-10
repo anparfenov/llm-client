@@ -1,4 +1,4 @@
-import type { Message } from '../types';
+import type { Message } from '@chat/types';
 
 type OllamaRole = 'user' | 'assistant' | 'system';
 

@@ -1,8 +1,8 @@
 import { render } from 'solid-js/web';
 
-import { I18nProvider } from './lib/i18n';
-import './styles.css';
-import App from './App';
+import { I18nProvider } from '@lib/i18n';
+import '@/styles.css';
+import App from '@/App';
 
 const root = document.getElementById('root');
 

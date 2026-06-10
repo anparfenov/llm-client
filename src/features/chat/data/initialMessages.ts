@@ -1,5 +1,5 @@
-import type { TranslationKey } from '../../../lib/i18n';
-import type { Message } from '../types';
+import type { TranslationKey } from '@lib/i18n';
+import type { Message } from '@chat/types';
 
 type Translate = (key: TranslationKey) => string;
 

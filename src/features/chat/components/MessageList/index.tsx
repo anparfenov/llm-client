@@ -1,9 +1,9 @@
 import { createEffect, For, on } from 'solid-js';
 
-import { useI18n } from '../../../../lib/i18n';
-import { MessageItem } from '../MessageItem';
-import type { Message } from '../../types';
-import styles from './MessageList.module.css';
+import { useI18n } from '@lib/i18n';
+import { MessageItem } from '@chat/components/MessageItem';
+import type { Message } from '@chat/types';
+import styles from '@chat/components/MessageList/MessageList.module.css';
 
 type MessageListProps = {
   messages: Message[];
@@ -17,7 +17,7 @@ export function MessageList(props: MessageListProps) {
     requestAnimationFrame(() => {
       listElement?.scrollTo({
         top: listElement.scrollHeight,
-        behavior: 'smooth',
+        behavior: 'auto',
       });
     });
   };

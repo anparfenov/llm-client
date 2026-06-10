@@ -1,6 +1,6 @@
 import { createContext, createSignal, useContext, type Accessor, type JSX } from 'solid-js';
 
-import { defaultLocale, translations, type Locale, type TranslationKey } from './translations';
+import { defaultLocale, translations, type Locale, type TranslationKey } from '@lib/i18n/translations';
 
 type I18nContextValue = {
   locale: Accessor<Locale>;

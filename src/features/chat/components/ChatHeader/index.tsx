@@ -1,5 +1,5 @@
-import { useI18n } from '../../../../lib/i18n';
-import styles from './ChatHeader.module.css';
+import { useI18n } from '@lib/i18n';
+import styles from '@chat/components/ChatHeader/ChatHeader.module.css';
 
 type ChatHeaderProps = {
   onNewChat: () => void;

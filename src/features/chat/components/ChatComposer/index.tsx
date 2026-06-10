@@ -1,5 +1,5 @@
-import { useI18n } from '../../../../lib/i18n';
-import styles from './ChatComposer.module.css';
+import { useI18n } from '@lib/i18n';
+import styles from '@chat/components/ChatComposer/ChatComposer.module.css';
 
 type ChatComposerProps = {
   draft: string;

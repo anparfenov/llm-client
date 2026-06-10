@@ -1,5 +1,5 @@
-import { useI18n } from '../../../lib/i18n';
-import type { Message } from '../types';
+import { useI18n } from '@lib/i18n';
+import type { Message } from '@chat/types';
 
 type UseMessageDisplayProps = {
   message: Message;

@@ -1,6 +1,6 @@
-import { useMessageDisplay } from '../../hooks/useMessageDisplay';
-import type { Message } from '../../types';
-import styles from './MessageItem.module.css';
+import { useMessageDisplay } from '@chat/hooks/useMessageDisplay';
+import type { Message } from '@chat/types';
+import styles from '@chat/components/MessageItem/MessageItem.module.css';
 
 type MessageItemProps = {
   message: Message;

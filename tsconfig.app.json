@@ -8,6 +8,11 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@chat/*": ["./src/features/chat/*"],
+      "@lib/*": ["./src/lib/*"]
+    },
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
