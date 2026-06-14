@@ -27,7 +27,7 @@
 
 .chatRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 34px;
+  grid-template-columns: minmax(0, 1fr) 34px 34px;
   gap: 6px;
 }
 
@@ -56,6 +56,7 @@
 }
 
 .renameButton,
+.removeButton,
 .renameAction {
   min-width: 34px;
   min-height: 38px;
@@ -69,14 +70,21 @@
 }
 
 .renameButton:not(:disabled):hover,
+.removeButton:not(:disabled):hover,
 .renameAction:not(:disabled):hover {
   background: var(--color-surface-muted);
+}
+
+.removeButton:not(:disabled):hover {
+  color: var(--color-error-text);
+  border-color: var(--color-error-border);
+  background: var(--color-error-surface);
 }
 
 .renameForm {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px;
 }
 

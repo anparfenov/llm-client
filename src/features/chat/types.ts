@@ -1,5 +1,5 @@
 export type Message = {
-  id: number;
+  id: string;
   role: 'user' | 'assistant';
   content: string;
   thinking?: string;
@@ -7,7 +7,7 @@ export type Message = {
 };
 
 export type SavedChat = {
-  id: number;
+  id: string;
   title: string;
   messages: Message[];
   createdAt: number;

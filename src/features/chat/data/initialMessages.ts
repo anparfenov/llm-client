@@ -5,7 +5,7 @@ type Translate = (key: TranslationKey) => string;
 
 export const createInitialMessages = (t: Translate): Message[] => [
   {
-    id: 1,
+    id: 'initial-assistant',
     role: 'assistant',
     content: t('initialAssistantMessage'),
   },

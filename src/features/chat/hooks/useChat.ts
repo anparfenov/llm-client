@@ -51,7 +51,7 @@ export function useChat() {
     setChats(chatIndex, 'title', createChatTitle(content, t));
   };
 
-  const updatePendingMessage = (messageId: number, getUpdate: (message: Message) => Message) => {
+  const updatePendingMessage = (messageId: string, getUpdate: (message: Message) => Message) => {
     const messageIndex = messages.findIndex((message) => message.id === messageId);
     const chatIndex = findActiveChatIndex();
 
@@ -74,11 +74,12 @@ export function useChat() {
       return;
     }
 
-    const pendingMessageId = Date.now() + 1;
+    const userMessageId = createId();
+    const pendingMessageId = createId();
 
     updateActiveChatTitle(content);
     appendMessage({
-      id: Date.now(),
+      id: userMessageId,
       role: 'user',
       content,
     });
@@ -138,7 +139,7 @@ export function useChat() {
     persistChats();
   };
 
-  const selectChat = (chatId: number) => {
+  const selectChat = (chatId: string) => {
     const chat = chats.find((savedChat) => savedChat.id === chatId);
 
     if (!chat || isSubmitting()) {
@@ -150,7 +151,7 @@ export function useChat() {
     setDraft('');
   };
 
-  const renameChat = (chatId: number, title: string) => {
+  const renameChat = (chatId: string, title: string) => {
     const chatIndex = chats.findIndex((chat) => chat.id === chatId);
     const nextTitle = createChatTitle(title, t);
 
@@ -161,6 +162,27 @@ export function useChat() {
     setChats(chatIndex, 'title', nextTitle);
     setChats(chatIndex, 'updatedAt', Date.now());
     persistChats();
+  };
+
+  const removeChat = (chatId: string) => {
+    const chatIndex = chats.findIndex((chat) => chat.id === chatId);
+
+    if (chatIndex === -1 || isSubmitting()) {
+      return;
+    }
+
+    const remainingChats = chats.filter((chat) => chat.id !== chatId);
+    const nextChats = remainingChats.length > 0 ? remainingChats : [createSavedChat(t)];
+    const nextActiveChat =
+      chatId === activeChatId()
+        ? nextChats[Math.min(chatIndex, nextChats.length - 1)]
+        : chats.find((chat) => chat.id === activeChatId()) ?? nextChats[0];
+
+    setChats(reconcile(nextChats));
+    setActiveChatId(nextActiveChat.id);
+    setMessages(reconcile(nextActiveChat.messages));
+    setDraft('');
+    localStorage.setItem(savedChatsStorageKey, JSON.stringify(nextChats));
   };
 
   return {
@@ -176,6 +198,7 @@ export function useChat() {
     startNewChat,
     selectChat,
     renameChat,
+    removeChat,
   };
 }
 
@@ -188,8 +211,14 @@ function loadSavedChats(t: Translate): SavedChat[] {
   }
 
   try {
-    const parsedChats = JSON.parse(storedChats) as SavedChat[];
-    const validChats = parsedChats.filter(isSavedChat);
+    const parsedChats = JSON.parse(storedChats);
+    const validChats = Array.isArray(parsedChats)
+      ? parsedChats.flatMap((chat) => {
+          const savedChat = normalizeSavedChat(chat);
+
+          return savedChat ? [savedChat] : [];
+        })
+      : [];
 
     return validChats.length > 0 ? validChats : [fallbackChat];
   } catch {
@@ -201,12 +230,16 @@ function createSavedChat(t: Translate): SavedChat {
   const now = Date.now();
 
   return {
-    id: now,
+    id: createId(),
     title: t('untitledChat'),
     messages: createInitialMessages(t),
     createdAt: now,
     updatedAt: now,
   };
+}
+
+function createId(): string {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 function createChatTitle(content: string, t: Translate): string {
@@ -215,12 +248,63 @@ function createChatTitle(content: string, t: Translate): string {
   return title ? title.slice(0, 48) : t('untitledChat');
 }
 
-function isSavedChat(chat: SavedChat): chat is SavedChat {
-  return (
-    typeof chat?.id === 'number' &&
-    typeof chat.title === 'string' &&
-    Array.isArray(chat.messages) &&
-    typeof chat.createdAt === 'number' &&
-    typeof chat.updatedAt === 'number'
-  );
+function normalizeSavedChat(chat: unknown): SavedChat | null {
+  if (!isRecord(chat)) {
+    return null;
+  }
+
+  const messages = Array.isArray(chat.messages)
+    ? chat.messages.flatMap((message) => {
+        const normalizedMessage = normalizeMessage(message);
+
+        return normalizedMessage ? [normalizedMessage] : [];
+      })
+    : [];
+
+  if (
+    !isIdLike(chat.id) ||
+    typeof chat.title !== 'string' ||
+    typeof chat.createdAt !== 'number' ||
+    typeof chat.updatedAt !== 'number'
+  ) {
+    return null;
+  }
+
+  return {
+    id: String(chat.id),
+    title: chat.title,
+    messages,
+    createdAt: chat.createdAt,
+    updatedAt: chat.updatedAt,
+  };
+}
+
+function normalizeMessage(message: unknown): Message | null {
+  if (
+    !isRecord(message) ||
+    !isIdLike(message.id) ||
+    (message.role !== 'user' && message.role !== 'assistant') ||
+    typeof message.content !== 'string'
+  ) {
+    return null;
+  }
+
+  return {
+    id: String(message.id),
+    role: message.role,
+    content: message.content,
+    thinking: typeof message.thinking === 'string' ? message.thinking : undefined,
+    status:
+      message.status === 'pending' || message.status === 'sent' || message.status === 'error'
+        ? message.status
+        : undefined,
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isIdLike(value: unknown): value is string | number {
+  return typeof value === 'string' || typeof value === 'number';
 }

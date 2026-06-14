@@ -16,6 +16,7 @@ export function ChatPage() {
         isSubmitting={chat.isSubmitting()}
         onSelectChat={chat.selectChat}
         onRenameChat={chat.renameChat}
+        onRemoveChat={chat.removeChat}
       />
       <section class={styles.chatShell}>
         <ChatHeader onNewChat={chat.startNewChat} />

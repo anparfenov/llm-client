@@ -6,16 +6,18 @@ import styles from '@chat/components/ChatSidebar/ChatSidebar.module.css';
 
 type ChatSidebarProps = {
   chats: SavedChat[];
-  activeChatId: number;
+  activeChatId: string;
   isSubmitting: boolean;
-  onSelectChat: (chatId: number) => void;
-  onRenameChat: (chatId: number, title: string) => void;
+  onSelectChat: (chatId: string) => void;
+  onRenameChat: (chatId: string, title: string) => void;
+  onRemoveChat: (chatId: string) => void;
 };
 
 export function ChatSidebar(props: ChatSidebarProps) {
   const { t } = useI18n();
-  const [renamingChatId, setRenamingChatId] = createSignal<number | null>(null);
+  const [renamingChatId, setRenamingChatId] = createSignal<string | null>(null);
   const [draftTitle, setDraftTitle] = createSignal('');
+  const [isCancellingRename, setIsCancellingRename] = createSignal(false);
 
   const startRenaming = (chat: SavedChat) => {
     setRenamingChatId(chat.id);
@@ -25,10 +27,14 @@ export function ChatSidebar(props: ChatSidebarProps) {
   const stopRenaming = () => {
     setRenamingChatId(null);
     setDraftTitle('');
+    setIsCancellingRename(false);
   };
 
-  const submitRename = (event: SubmitEvent, chatId: number) => {
-    event.preventDefault();
+  const commitRename = (chatId: string) => {
+    if (isCancellingRename()) {
+      return;
+    }
+
     props.onRenameChat(chatId, draftTitle());
     stopRenaming();
   };
@@ -64,28 +70,48 @@ export function ChatSidebar(props: ChatSidebarProps) {
                     >
                       R
                     </button>
+                    <button
+                      class={styles.removeButton}
+                      type="button"
+                      disabled={props.isSubmitting}
+                      aria-label={t('removeChat')}
+                      title={t('removeChat')}
+                      onClick={() => props.onRemoveChat(chat.id)}
+                    >
+                      X
+                    </button>
                   </>
                 }
               >
-                <form class={styles.renameForm} onSubmit={(event) => submitRename(event, chat.id)}>
+                <div class={styles.renameForm}>
                   <input
                     class={styles.renameInput}
                     value={draftTitle()}
                     aria-label={t('renameChat')}
                     onInput={(event) => setDraftTitle(event.currentTarget.value)}
+                    onBlur={() => commitRename(chat.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        event.currentTarget.blur();
+                      }
+
+                      if (event.key === 'Escape') {
+                        event.preventDefault();
+                        stopRenaming();
+                      }
+                    }}
                   />
-                  <button class={styles.renameAction} type="submit" title={t('saveChatName')}>
-                    OK
-                  </button>
                   <button
                     class={styles.renameAction}
                     type="button"
                     title={t('cancelRename')}
+                    onPointerDown={() => setIsCancellingRename(true)}
                     onClick={stopRenaming}
                   >
                     X
                   </button>
-                </form>
+                </div>
               </Show>
             </div>
           )}
