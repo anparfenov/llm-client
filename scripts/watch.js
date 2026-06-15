@@ -1,4 +1,5 @@
 import { existsSync, watch } from 'node:fs';
+import { createServer } from 'node:net';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 
@@ -6,7 +7,9 @@ const rootDir = process.cwd();
 const serverDir = join(rootDir, 'server');
 const viteBin = join(rootDir, 'node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite');
 const serverEntry = join(serverDir, 'index.ts');
-const serverPort = process.env.PORT || '3000';
+const serverPort = process.env.PORT || String(await findAvailablePort(3000));
+const clientPort = process.env.CLIENT_PORT || String(await findAvailablePort(5173));
+const clientDevServerUrl = `http://localhost:${clientPort}`;
 
 let serverProcess;
 let restartTimer;
@@ -17,7 +20,7 @@ if (!existsSync(viteBin)) {
   process.exit(1);
 }
 
-const clientProcess = spawn(viteBin, ['--host', '0.0.0.0'], {
+const clientProcess = spawn(viteBin, ['--host', '0.0.0.0', '--port', clientPort, '--strictPort'], {
   cwd: rootDir,
   env: {
     ...process.env,
@@ -51,6 +54,7 @@ function startServer() {
     env: {
       ...process.env,
       PORT: serverPort,
+      CLIENT_DEV_SERVER_URL: clientDevServerUrl,
     },
     stdio: 'inherit',
   });
@@ -99,4 +103,26 @@ function formatExit(code, signal) {
   }
 
   return typeof code === 'number' ? ` with code ${code}` : '';
+}
+
+async function findAvailablePort(startPort) {
+  let port = startPort;
+
+  while (!(await isPortAvailable(port))) {
+    port += 1;
+  }
+
+  return port;
+}
+
+function isPortAvailable(port) {
+  return new Promise((resolve) => {
+    const probe = createServer();
+
+    probe.once('error', () => resolve(false));
+    probe.once('listening', () => {
+      probe.close(() => resolve(true));
+    });
+    probe.listen(port, '0.0.0.0');
+  });
 }

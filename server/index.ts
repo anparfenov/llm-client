@@ -13,6 +13,7 @@ const distDir = join(projectRoot, 'dist');
 
 const port = Number(process.env.PORT || 3000);
 const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
+const clientDevServerUrl = process.env.CLIENT_DEV_SERVER_URL;
 const maxBodySize = 1024 * 1024;
 
 const mimeTypes: Record<string, string> = {
@@ -36,6 +37,11 @@ const server = createServer(async (request, response) => {
       return;
     }
 
+    if (clientDevServerUrl) {
+      redirectToClientDevServer(url, response);
+      return;
+    }
+
     await serveStaticFile(url.pathname, response);
   } catch (error) {
     console.error('Server request failed.', error);
@@ -46,6 +52,10 @@ const server = createServer(async (request, response) => {
 server.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
   console.log(`Proxying Ollama chat requests to ${ollamaApiUrl}/api/chat`);
+
+  if (clientDevServerUrl) {
+    console.log(`Forwarding client routes to ${clientDevServerUrl}`);
+  }
 });
 
 async function proxyOllamaChat(
@@ -193,6 +203,17 @@ function getRequestOrigin(request: IncomingMessage): string {
   const protocol = getFirstHeaderValue(request.headers['x-forwarded-proto']) || 'http';
 
   return `${protocol}://${host}`;
+}
+
+function redirectToClientDevServer(url: URL, response: ServerResponse): void {
+  const redirectUrl = new URL(clientDevServerUrl || '');
+  redirectUrl.pathname = url.pathname;
+  redirectUrl.search = url.search;
+  response.writeHead(307, {
+    'Cache-Control': 'no-store',
+    Location: redirectUrl.toString(),
+  });
+  response.end();
 }
 
 function getFirstHeaderValue(header: string | string[] | undefined): string | undefined {

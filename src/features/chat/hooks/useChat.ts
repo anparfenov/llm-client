@@ -16,7 +16,7 @@ export function useChat() {
   const initialChats = loadSavedChats(t);
   const [chats, setChats] = createStore<SavedChat[]>(initialChats);
   const [activeChatId, setActiveChatId] = createSignal(initialChats[0].id);
-  const [messages, setMessages] = createStore<Message[]>(initialChats[0].messages);
+  const [messages, setMessages] = createStore<Message[]>(cloneMessages(initialChats[0].messages));
   const [draft, setDraft] = createSignal('');
   const [isSubmitting, setIsSubmitting] = createSignal(false);
   const [selectedModel] = createSignal(defaultChatModel.id);
@@ -129,11 +129,11 @@ export function useChat() {
   };
 
   const startNewChat = () => {
-    const nextChat = createSavedChat(t);
+    const nextChat = createSavedChat(t, new Set(chats.map((chat) => chat.id)));
 
     setChats(chats.length, nextChat);
     setActiveChatId(nextChat.id);
-    setMessages(reconcile(nextChat.messages));
+    setMessages(reconcile(cloneMessages(nextChat.messages)));
     setDraft('');
     setIsSubmitting(false);
     persistChats();
@@ -147,7 +147,7 @@ export function useChat() {
     }
 
     setActiveChatId(chat.id);
-    setMessages(reconcile(chat.messages));
+    setMessages(reconcile(cloneMessages(chat.messages)));
     setDraft('');
   };
 
@@ -172,7 +172,10 @@ export function useChat() {
     }
 
     const remainingChats = chats.filter((chat) => chat.id !== chatId);
-    const nextChats = remainingChats.length > 0 ? remainingChats : [createSavedChat(t)];
+    const nextChats =
+      remainingChats.length > 0
+        ? remainingChats
+        : [createSavedChat(t, new Set(chats.map((chat) => chat.id)))];
     const nextActiveChat =
       chatId === activeChatId()
         ? nextChats[Math.min(chatIndex, nextChats.length - 1)]
@@ -180,7 +183,7 @@ export function useChat() {
 
     setChats(reconcile(nextChats));
     setActiveChatId(nextActiveChat.id);
-    setMessages(reconcile(nextActiveChat.messages));
+    setMessages(reconcile(cloneMessages(nextActiveChat.messages)));
     setDraft('');
     localStorage.setItem(savedChatsStorageKey, JSON.stringify(nextChats));
   };
@@ -212,13 +215,7 @@ function loadSavedChats(t: Translate): SavedChat[] {
 
   try {
     const parsedChats = JSON.parse(storedChats);
-    const validChats = Array.isArray(parsedChats)
-      ? parsedChats.flatMap((chat) => {
-          const savedChat = normalizeSavedChat(chat);
-
-          return savedChat ? [savedChat] : [];
-        })
-      : [];
+    const validChats = Array.isArray(parsedChats) ? normalizeSavedChats(parsedChats) : [];
 
     return validChats.length > 0 ? validChats : [fallbackChat];
   } catch {
@@ -226,16 +223,26 @@ function loadSavedChats(t: Translate): SavedChat[] {
   }
 }
 
-function createSavedChat(t: Translate): SavedChat {
+function createSavedChat(t: Translate, existingIds = new Set<string>()): SavedChat {
   const now = Date.now();
 
   return {
-    id: createId(),
+    id: createUniqueId(existingIds),
     title: t('untitledChat'),
     messages: createInitialMessages(t),
     createdAt: now,
     updatedAt: now,
   };
+}
+
+function createUniqueId(existingIds: Set<string>): string {
+  let id = createId();
+
+  while (existingIds.has(id)) {
+    id = createId();
+  }
+
+  return id;
 }
 
 function createId(): string {
@@ -246,6 +253,22 @@ function createChatTitle(content: string, t: Translate): string {
   const title = content.replace(/\s+/g, ' ').trim();
 
   return title ? title.slice(0, 48) : t('untitledChat');
+}
+
+function normalizeSavedChats(chats: unknown[]): SavedChat[] {
+  const seenChatIds = new Set<string>();
+
+  return chats.flatMap((chat) => {
+    const savedChat = normalizeSavedChat(chat);
+
+    if (!savedChat || seenChatIds.has(savedChat.id)) {
+      return [];
+    }
+
+    seenChatIds.add(savedChat.id);
+
+    return [savedChat];
+  });
 }
 
 function normalizeSavedChat(chat: unknown): SavedChat | null {
@@ -273,10 +296,28 @@ function normalizeSavedChat(chat: unknown): SavedChat | null {
   return {
     id: String(chat.id),
     title: chat.title,
-    messages,
+    messages: dedupeMessages(messages),
     createdAt: chat.createdAt,
     updatedAt: chat.updatedAt,
   };
+}
+
+function cloneMessages(messages: Message[]): Message[] {
+  return messages.map((message) => ({ ...message }));
+}
+
+function dedupeMessages(messages: Message[]): Message[] {
+  const seenMessageIds = new Set<string>();
+
+  return messages.filter((message) => {
+    if (seenMessageIds.has(message.id)) {
+      return false;
+    }
+
+    seenMessageIds.add(message.id);
+
+    return true;
+  });
 }
 
 function normalizeMessage(message: unknown): Message | null {

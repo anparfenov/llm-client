@@ -1,3 +1,4 @@
+import { MarkdownContent } from '@chat/components/MarkdownContent';
 import { useMessageDisplay } from '@chat/hooks/useMessageDisplay';
 import type { Message } from '@chat/types';
 import styles from '@chat/components/MessageItem/MessageItem.module.css';
@@ -26,7 +27,7 @@ export function MessageItem(props: MessageItemProps) {
             <p>{props.message.thinking}</p>
           </div>
         )}
-        {display.content() && <p>{display.content()}</p>}
+        {display.content() && <MarkdownContent content={display.content()} />}
       </div>
     </article>
   );

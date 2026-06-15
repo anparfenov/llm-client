@@ -1,98 +1,114 @@
 .composer {
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  gap: 10px;
-  align-items: end;
-  padding: 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-composer);
+	--composer-content-gap: 10px;
+	--composer-content-padding: 12px;
+	--composer-input-min-height: 42px;
+	--composer-input-max-height: 180px;
+	--composer-control-min-height: 40px;
+	--composer-toggle-icon-size: 16px;
+	--composer-send-min-width: 76px;
+
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: minmax(var(--size-chat-sidebar-min), var(--size-chat-sidebar-max)) 1fr;
+	width: 100vw;
+}
+
+.composerCollapsed {
+	grid-template-columns: var(--size-chat-sidebar-collapsed) 1fr;
+}
+
+.composerContent {
+	grid-column: 2;
+	display: flex;
+	gap: var(--composer-content-gap);
+	background: white;
+	padding: var(--composer-content-padding);
 }
 
 .screenReaderOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 
 .messageInput {
-  width: 100%;
-  max-height: 180px;
-  min-height: 42px;
-  resize: vertical;
-  padding: 9px 4px;
-  border: 0;
-  outline: 0;
-  color: var(--color-text-primary);
-  background: transparent;
+	width: 100%;
+	max-height: var(--composer-input-max-height);
+	min-height: var(--composer-input-min-height);
+	resize: vertical;
+	padding: 9px 4px;
+	border: 0;
+	outline: 0;
+	color: var(--color-text-primary);
+	background: transparent;
 }
 
 .messageInput:disabled {
-  color: var(--color-text-muted);
+	color: var(--color-text-muted);
 }
 
 .messageInput::placeholder {
-  color: var(--color-placeholder);
+	color: var(--color-placeholder);
 }
 
 .thinkingToggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 12px;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface-muted);
-  font-size: 0.88rem;
-  font-weight: 700;
-  white-space: nowrap;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: var(--composer-control-min-height);
+	padding: 0 12px;
+	color: var(--color-text-secondary);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-control);
+	background: var(--color-surface-muted);
+	font-size: 14px;
+	font-weight: 700;
+	white-space: nowrap;
 }
 
 .thinkingToggle input {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: var(--color-brand);
+	width: var(--composer-toggle-icon-size);
+	height: var(--composer-toggle-icon-size);
+	margin: 0;
+	accent-color: var(--color-brand);
 }
 
 .sendButton {
-  min-width: 76px;
-  min-height: 40px;
-  padding: 0 16px;
-  color: var(--color-on-dark);
-  border: 0;
-  border-radius: 8px;
-  background: var(--color-text-primary);
-  font-weight: 700;
+	min-width: var(--composer-send-min-width);
+	min-height: var(--composer-control-min-height);
+	padding: 0 16px;
+	color: var(--color-on-dark);
+	border: 0;
+	border-radius: var(--radius-control);
+	background: var(--color-text-primary);
+	font-weight: 700;
 }
 
 .sendButton:not(:disabled):hover {
-  background: var(--color-button-hover);
+	background: var(--color-button-hover);
 }
 
 @media (max-width: 640px) {
-  .composer {
-    grid-template-columns: 1fr;
-  }
+	.composer {
+		grid-template-columns: 1fr;
+	}
 
-  .thinkingToggle {
-    justify-content: center;
-    width: 100%;
-  }
+	.thinkingToggle {
+		justify-content: center;
+		width: 100%;
+	}
 
-  .sendButton {
-    width: 100%;
-  }
+	.sendButton {
+		width: 100%;
+	}
 }
