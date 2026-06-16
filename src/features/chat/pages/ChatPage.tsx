@@ -1,11 +1,10 @@
-import { createSignal } from "solid-js";
-
-import { ChatComposer } from "@chat/components/ChatComposer/ChatComposer";
-import { ChatHeader } from "@chat/components/ChatHeader/ChatHeader";
-import { ChatSidebar } from "@chat/components/ChatSidebar/ChatSidebar";
-import { MessageList } from "@chat/components/MessageList/MessageList";
 import { useChat } from "@chat/hooks/useChat";
 import styles from "@chat/pages/ChatPage.module.css";
+import { ChatComposer } from "@chat/widgets/ChatComposer/ChatComposer";
+import { ChatHeader } from "@chat/widgets/ChatHeader/ChatHeader";
+import { ChatSidebar } from "@chat/widgets/ChatSidebar/ChatSidebar";
+import { MessageList } from "@chat/widgets/MessageList/MessageList";
+import { createSignal } from "solid-js";
 
 export function ChatPage() {
 	const chat = useChat();

@@ -1,7 +1,7 @@
+import styles from "@chat/widgets/MarkdownContent/MarkdownContent.module.css";
 import type { JSX } from "solid-js";
-import styles from "@chat/components/MarkdownContent/MarkdownContent.module.css";
 
-type MarkdownContentProps = {
+type UseMarkdownContentProps = {
 	content: string;
 };
 
@@ -27,10 +27,11 @@ type InlineSegment =
 	| { type: "link"; content: string; href: string }
 	| { type: "text"; content: string };
 
-export function MarkdownContent(props: MarkdownContentProps) {
-	const blocks = () => parseBlocks(props.content);
-
-	return <div class={styles.markdown}>{blocks().map(renderBlock)}</div>;
+export function useMarkdownContent(props: UseMarkdownContentProps) {
+	return {
+		blocks: () => parseBlocks(props.content),
+		renderBlock,
+	};
 }
 
 function parseBlocks(markdown: string): Block[] {

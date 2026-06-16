@@ -1,11 +1,16 @@
-import { useI18n } from "@lib/i18n";
 import type { Message } from "@chat/types";
+import { useI18n } from "@lib/i18n";
 
-type UseMessageDisplayProps = {
+export type MessageItemProps = {
 	message: Message;
 };
 
-export function useMessageDisplay(props: UseMessageDisplayProps) {
+type MessageItemStyles = Record<string, string>;
+
+export function useMessageItem(
+	props: MessageItemProps,
+	styles: MessageItemStyles,
+) {
 	const { t } = useI18n();
 
 	const avatarLabel = () =>
@@ -17,11 +22,18 @@ export function useMessageDisplay(props: UseMessageDisplayProps) {
 		!hasThinking()
 			? t("pendingAssistantMessage")
 			: props.message.content;
+	const roleClass = () => (props.message.role === "user" ? styles.user : "");
+	const statusClass = () =>
+		props.message.status === "pending" || props.message.status === "error"
+			? styles[props.message.status]
+			: "";
 
 	return {
 		avatarLabel,
 		hasThinking,
 		content,
+		roleClass,
+		statusClass,
 		thinkingLabel: () => t("thinkingLabel"),
 	};
 }
