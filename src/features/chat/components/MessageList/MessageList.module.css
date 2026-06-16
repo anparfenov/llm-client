@@ -1,16 +1,16 @@
 .messageList {
-  --message-list-bottom-padding: 76px;
+	--message-list-bottom-padding: 76px;
 
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  min-height: 0;
-  padding: 22px 0 var(--message-list-bottom-padding);
-  height: max-content;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	min-height: 0;
+	padding: 22px 0 var(--message-list-bottom-padding);
+	height: max-content;
 }
 
 @media (max-width: 640px) {
-  .messageList {
-    gap: 14px;
-  }
+	.messageList {
+		gap: 14px;
+	}
 }

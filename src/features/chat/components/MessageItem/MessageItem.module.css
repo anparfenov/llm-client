@@ -1,108 +1,108 @@
 .messageRow {
-  display: grid;
-  grid-template-columns: var(--size-chat-row-control) minmax(0, 1fr);
-  gap: 12px;
-  align-items: start;
+	display: grid;
+	grid-template-columns: var(--size-chat-row-control) minmax(0, 1fr);
+	gap: 12px;
+	align-items: start;
 }
 
 .user {
-  grid-template-columns: minmax(0, 1fr) var(--size-chat-row-control);
+	grid-template-columns: minmax(0, 1fr) var(--size-chat-row-control);
+}
+
+.avatar {
+	display: grid;
+	width: var(--size-chat-row-control);
+	height: var(--size-chat-row-control);
+	place-items: center;
+	border-radius: var(--radius-control);
+	color: var(--color-on-dark);
+	background: var(--color-brand);
+	font-size: 12px;
+	font-weight: 800;
+}
+
+.messageBubble {
+	width: fit-content;
+	max-width: min(95%, 1000px);
+	padding: 13px 15px;
+	border: 1px solid var(--color-border-soft);
+	border-radius: var(--radius-control);
+	background: var(--color-surface);
+	box-shadow: var(--shadow-bubble);
 }
 
 .user .avatar {
-  grid-column: 2;
-  background: var(--color-user);
+	grid-column: 2;
+	background: var(--color-user);
 }
 
 .user .messageBubble {
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: end;
-  color: var(--color-on-dark);
-  background: var(--color-user);
+	grid-column: 1;
+	grid-row: 1;
+	justify-self: end;
+	color: var(--color-on-dark);
+	background: var(--color-user);
 }
 
 .user .messageBubble a {
-  color: var(--color-on-dark);
+	color: var(--color-on-dark);
 }
 
 .user .messageBubble code,
 .user .messageBubble pre {
-  color: var(--color-text-primary);
+	color: var(--color-text-primary);
 }
 
 .pending .messageBubble {
-  color: var(--color-text-muted);
+	color: var(--color-text-muted);
 }
 
 .error .messageBubble {
-  color: var(--color-error-text);
-  border-color: var(--color-error-border);
-  background: var(--color-error-surface);
-}
-
-.avatar {
-  display: grid;
-  width: var(--size-chat-row-control);
-  height: var(--size-chat-row-control);
-  place-items: center;
-  border-radius: var(--radius-control);
-  color: var(--color-on-dark);
-  background: var(--color-brand);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.messageBubble {
-  width: fit-content;
-  max-width: min(95%, 1000px);
-  padding: 13px 15px;
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-bubble);
+	color: var(--color-error-text);
+	border-color: var(--color-error-border);
+	background: var(--color-error-surface);
 }
 
 .thinkingTrace {
-  margin: 0 0 12px;
-  padding: 0 0 12px;
-  color: var(--color-thinking-text);
-  border-bottom: 1px solid var(--color-border-thinking);
+	margin: 0 0 12px;
+	padding: 0 0 12px;
+	color: var(--color-thinking-text);
+	border-bottom: 1px solid var(--color-border-thinking);
 }
 
 .thinkingTrace:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: 0;
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom: 0;
 }
 
 .thinkingLabel {
-  margin: 0 0 6px;
-  color: var(--color-brand);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0;
-  text-transform: uppercase;
+	margin: 0 0 6px;
+	color: var(--color-brand);
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0;
+	text-transform: uppercase;
 }
 
 @media (max-width: 640px) {
-  .messageRow,
-  .user {
-    grid-template-columns: 32px minmax(0, 1fr);
-  }
+	.messageRow,
+	.user {
+		grid-template-columns: 32px minmax(0, 1fr);
+	}
 
-  .user .avatar {
-    grid-column: 1;
-  }
+	.messageRow .avatar {
+		width: 32px;
+		height: 32px;
+		font-size: 11px;
+	}
 
-  .user .messageBubble {
-    grid-column: 2;
-    justify-self: start;
-  }
+	.user .avatar {
+		grid-column: 1;
+	}
 
-  .avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 11px;
-  }
+	.user .messageBubble {
+		grid-column: 2;
+		justify-self: start;
+	}
 }

@@ -1,213 +1,213 @@
 .sidebar {
-  --sidebar-collapse-button-size: 34px;
-  --sidebar-chat-title-padding-x: 10px;
+	--sidebar-collapse-button-size: 34px;
+	--sidebar-chat-title-padding-x: 10px;
 
-  display: flex;
-  min-height: 0;
-  padding: 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-bubble);
-  flex-direction: column;
+	display: flex;
+	min-height: 0;
+	padding: 14px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-control);
+	background: var(--color-surface);
+	box-shadow: var(--shadow-bubble);
+	flex-direction: column;
 }
 
 .collapsed {
-  align-items: center;
-  padding: 10px;
+	align-items: center;
+	padding: 10px;
 }
 
 .header {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0 12px;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0 0 12px;
 }
 
 .collapsed .header {
-  margin: 0;
+	margin: 0;
 }
 
 .title {
-  margin: 0;
-  color: var(--color-text-primary);
-  font-size: 15px;
-  line-height: 18px;
+	margin: 0;
+	color: var(--color-text-primary);
+	font-size: 15px;
+	line-height: 18px;
 }
 
 .collapseButton {
-  display: grid;
-  min-width: var(--sidebar-collapse-button-size);
-  min-height: var(--sidebar-collapse-button-size);
-  padding: 0;
-  place-items: center;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  font-size: 14px;
-  font-weight: 900;
+	display: grid;
+	min-width: var(--sidebar-collapse-button-size);
+	min-height: var(--sidebar-collapse-button-size);
+	padding: 0;
+	place-items: center;
+	color: var(--color-text-secondary);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-control);
+	background: var(--color-surface);
+	font-size: 14px;
+	font-weight: 900;
 }
 
 .collapseButton:not(:disabled):hover {
-  background: var(--color-surface-muted);
+	background: var(--color-surface-muted);
 }
 
 .chatList {
-  display: flex;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 6px;
-  overflow-y: auto;
+	display: flex;
+	min-height: 0;
+	flex: 1;
+	flex-direction: column;
+	gap: 6px;
+	overflow-y: auto;
 }
 
 .collapsedChatList {
-  display: flex;
-  min-height: 0;
-  width: 100%;
-  flex: 1;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  overflow-y: auto;
-  padding: 12px 0 0;
+	display: flex;
+	min-height: 0;
+	width: 100%;
+	flex: 1;
+	flex-direction: column;
+	gap: 8px;
+	align-items: center;
+	overflow-y: auto;
+	padding: 12px 0 0;
 }
 
 .collapsedChatButton {
-  display: grid;
-  width: var(--size-chat-row-control);
-  height: var(--size-chat-row-control);
-  padding: 0;
-  place-items: center;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  font-size: 13px;
-  font-weight: 900;
-  line-height: 13px;
+	display: grid;
+	width: var(--size-chat-row-control);
+	height: var(--size-chat-row-control);
+	padding: 0;
+	place-items: center;
+	color: var(--color-text-secondary);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-control);
+	background: var(--color-surface);
+	font-size: 13px;
+	font-weight: 900;
+	line-height: 13px;
 }
 
 .collapsedChatButton:not(:disabled):hover {
-  background: var(--color-surface-muted);
+	background: var(--color-surface-muted);
 }
 
 .chatRow {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr)
-    var(--size-chat-row-control)
-    var(--size-chat-row-control);
-  gap: 6px;
+	display: grid;
+	grid-template-columns:
+		minmax(0, 1fr)
+		var(--size-chat-row-control)
+		var(--size-chat-row-control);
+	gap: 6px;
 }
 
 .chatButton {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: var(--size-chat-row-control);
-  min-height: 0;
-  padding: 0 var(--sidebar-chat-title-padding-x);
-  color: var(--color-text-secondary);
-  border: 1px solid transparent;
-  border-radius: var(--radius-control);
-  background: transparent;
-  font-weight: 700;
-  text-align: left;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: var(--size-chat-row-control);
+	min-height: 0;
+	padding: 0 var(--sidebar-chat-title-padding-x);
+	color: var(--color-text-secondary);
+	border: 1px solid transparent;
+	border-radius: var(--radius-control);
+	background: transparent;
+	font-weight: 700;
+	text-align: left;
 }
 
 .chatButton span {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .chatButton:not(:disabled):hover {
-  background: var(--color-surface-muted);
+	background: var(--color-surface-muted);
 }
 
 .renameButton,
 .removeButton,
 .renameAction {
-  display: grid;
-  width: var(--size-chat-row-control);
-  height: var(--size-chat-row-control);
-  padding: 0;
-  place-items: center;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  font-size: 12px;
-  font-weight: 800;
+	display: grid;
+	width: var(--size-chat-row-control);
+	height: var(--size-chat-row-control);
+	padding: 0;
+	place-items: center;
+	color: var(--color-text-secondary);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-control);
+	background: var(--color-surface);
+	font-size: 12px;
+	font-weight: 800;
 }
 
 .renameButton:not(:disabled):hover,
 .removeButton:not(:disabled):hover,
 .renameAction:not(:disabled):hover {
-  background: var(--color-surface-muted);
+	background: var(--color-surface-muted);
 }
 
 .removeButton:not(:disabled):hover {
-  color: var(--color-error-text);
-  border-color: var(--color-error-border);
-  background: var(--color-error-surface);
+	color: var(--color-error-text);
+	border-color: var(--color-error-border);
+	background: var(--color-error-surface);
 }
 
 .renameForm {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 6px;
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 6px;
 }
 
 .renameInput {
-  min-width: 0;
-  min-height: var(--size-chat-row-control);
-  padding: 0 var(--sidebar-chat-title-padding-x);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  outline: 0;
-  background: var(--color-surface);
-  font: inherit;
-  font-weight: 700;
+	min-width: 0;
+	min-height: var(--size-chat-row-control);
+	padding: 0 var(--sidebar-chat-title-padding-x);
+	color: var(--color-text-primary);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-control);
+	outline: 0;
+	background: var(--color-surface);
+	font: inherit;
+	font-weight: 700;
 }
 
 .renameInput:focus {
-  border-color: var(--color-brand);
+	border-color: var(--color-brand);
 }
 
 .active {
-  color: var(--color-text-primary);
-  border-color: var(--color-border);
-  background: var(--color-surface-muted);
+	color: var(--color-text-primary);
+	border-color: var(--color-border);
+	background: var(--color-surface-muted);
 }
 
 .collapsedChatButton.active {
-  color: var(--color-on-dark);
-  border-color: var(--color-user);
-  background: var(--color-user);
+	color: var(--color-on-dark);
+	border-color: var(--color-user);
+	background: var(--color-user);
 }
 
 @media (max-width: 760px) {
-  .sidebar {
-    max-height: 150px;
-  }
+	.sidebar {
+		max-height: 150px;
+	}
 
-  .collapsed {
-    max-height: none;
-    align-items: flex-start;
-  }
+	.collapsed {
+		max-height: none;
+		align-items: flex-start;
+	}
 
-  .collapsedChatList {
-    max-width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 0 0 2px;
-  }
+	.collapsedChatList {
+		max-width: 100%;
+		flex-direction: row;
+		overflow-x: auto;
+		overflow-y: hidden;
+		padding: 0 0 2px;
+	}
 }

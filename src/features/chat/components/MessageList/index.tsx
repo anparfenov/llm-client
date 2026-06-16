@@ -1,46 +1,49 @@
-import { createEffect, For, on } from 'solid-js';
+import { createEffect, For, on } from "solid-js";
 
-import { useI18n } from '@lib/i18n';
-import { MessageItem } from '@chat/components/MessageItem';
-import type { Message } from '@chat/types';
-import styles from '@chat/components/MessageList/MessageList.module.css';
+import { useI18n } from "@lib/i18n";
+import { MessageItem } from "@chat/components/MessageItem";
+import type { Message } from "@chat/types";
+import styles from "@chat/components/MessageList/MessageList.module.css";
 
 type MessageListProps = {
-  messages: Message[];
+	messages: Message[];
 };
 
 export function MessageList(props: MessageListProps) {
-  const { t } = useI18n();
-  let listElement: HTMLElement | undefined;
+	const { t } = useI18n();
+	let listElement: HTMLElement | undefined;
 
-  const scrollToBottom = () => {
-    requestAnimationFrame(() => {
-      listElement?.scrollTo({
-        top: listElement.scrollHeight,
-        behavior: 'auto',
-      });
-    });
-  };
+	const scrollToBottom = () => {
+		requestAnimationFrame(() => {
+			listElement?.scrollTo({
+				top: listElement.scrollHeight,
+				behavior: "auto",
+			});
+		});
+	};
 
-  createEffect(
-    on(
-      () => {
-        const lastMessage = props.messages.at(-1);
+	createEffect(
+		on(() => {
+			const lastMessage = props.messages.at(-1);
 
-        return [
-          props.messages.length,
-          lastMessage?.content,
-          lastMessage?.thinking,
-          lastMessage?.status,
-        ].join('|');
-      },
-      scrollToBottom,
-    ),
-  );
+			return [
+				props.messages.length,
+				lastMessage?.content,
+				lastMessage?.thinking,
+				lastMessage?.status,
+			].join("|");
+		}, scrollToBottom),
+	);
 
-  return (
-    <section ref={listElement} class={styles.messageList} aria-label={t('conversationLabel')}>
-      <For each={props.messages}>{(message) => <MessageItem message={message} />}</For>
-    </section>
-  );
+	return (
+		<section
+			ref={listElement}
+			class={styles.messageList}
+			aria-label={t("conversationLabel")}
+		>
+			<For each={props.messages}>
+				{(message) => <MessageItem message={message} />}
+			</For>
+		</section>
+	);
 }

@@ -1,35 +1,38 @@
 .chatPage {
-  display: grid;
-  grid-template-columns: minmax(var(--size-chat-sidebar-min), var(--size-chat-sidebar-max)) 1fr;
-  gap: 18px;
-  justify-content: center;
-  height: 100dvh;
-  min-height: 0;
-  overflow: hidden;
+	display: grid;
+	grid-template-columns: minmax(
+			var(--size-chat-sidebar-min),
+			var(--size-chat-sidebar-max)
+		) 1fr;
+	gap: 18px;
+	justify-content: center;
+	height: 100dvh;
+	min-height: 0;
+	overflow: hidden;
 }
 
 .chatListCollapsed {
-  grid-template-columns: var(--size-chat-sidebar-collapsed) minmax(0, 1fr);
+	grid-template-columns: var(--size-chat-sidebar-collapsed) minmax(0, 1fr);
 }
 
 .chatShell {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 @media (max-width: 760px) {
-  .chatPage {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
-    padding: 12px;
-  }
+	.chatPage {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto minmax(0, 1fr);
+		padding: 12px;
+	}
 
-  .chatListCollapsed {
-    grid-template-columns: 1fr;
-  }
+	.chatListCollapsed {
+		grid-template-columns: 1fr;
+	}
 }

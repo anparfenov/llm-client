@@ -8,6 +8,8 @@
 		"dev:client": "vite --host 0.0.0.0",
 		"dev:server": "node server/index.ts",
 		"build": "tsc -b && vite build",
+		"format": "biome format --write .",
+		"lint": "biome lint .",
 		"preview": "vite preview --host 0.0.0.0",
 		"start": "node server/index.ts"
 	},
