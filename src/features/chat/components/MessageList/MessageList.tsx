@@ -1,7 +1,7 @@
 import { createEffect, For, on } from "solid-js";
 
 import { useI18n } from "@lib/i18n";
-import { MessageItem } from "@chat/components/MessageItem";
+import { MessageItem } from "@chat/components/MessageItem/MessageItem";
 import type { Message } from "@chat/types";
 import styles from "@chat/components/MessageList/MessageList.module.css";
 

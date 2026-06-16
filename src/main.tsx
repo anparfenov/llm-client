@@ -1,6 +1,5 @@
-import { render } from "solid-js/web";
-
 import { I18nProvider } from "@lib/i18n";
+import { render } from "solid-js/web";
 import "@/styles.css";
 import App from "@/App";
 

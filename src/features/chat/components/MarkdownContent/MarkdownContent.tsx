@@ -1,5 +1,4 @@
 import type { JSX } from "solid-js";
-
 import styles from "@chat/components/MarkdownContent/MarkdownContent.module.css";
 
 type MarkdownContentProps = {

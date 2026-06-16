@@ -1,4 +1,4 @@
-import { MarkdownContent } from "@chat/components/MarkdownContent";
+import { MarkdownContent } from "@chat/components/MarkdownContent/MarkdownContent";
 import { useMessageDisplay } from "@chat/hooks/useMessageDisplay";
 import type { Message } from "@chat/types";
 import styles from "@chat/components/MessageItem/MessageItem.module.css";

@@ -5,7 +5,6 @@ import {
 	type Accessor,
 	type JSX,
 } from "solid-js";
-
 import {
 	defaultLocale,
 	translations,
