@@ -1,9 +1,6 @@
 import { useMarkdownContent } from "@chat/widgets/MarkdownContent/hooks/useMarkdownContent";
 import styles from "@chat/widgets/MarkdownContent/MarkdownContent.module.css";
-
-type MarkdownContentProps = {
-	content: string;
-};
+import type { MarkdownContentProps } from "@chat/widgets/MarkdownContent/types";
 
 export function MarkdownContent(props: MarkdownContentProps) {
 	const markdown = useMarkdownContent(props);

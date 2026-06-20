@@ -1,20 +1,11 @@
 import type { SavedChat } from "@chat/types";
+import type {
+	ChatSidebarProps,
+	ChatSidebarStyles,
+} from "@chat/widgets/ChatSidebar/types";
 
 import { useI18n } from "@lib/i18n";
 import { createSignal } from "solid-js";
-
-export type ChatSidebarProps = {
-	chats: SavedChat[];
-	activeChatId: string;
-	isSubmitting: boolean;
-	isCollapsed: boolean;
-	onToggleCollapse: () => void;
-	onSelectChat: (chatId: string) => void;
-	onRenameChat: (chatId: string, title: string) => void;
-	onRemoveChat: (chatId: string) => void;
-};
-
-type ChatSidebarStyles = Record<string, string>;
 
 export function useChatSidebar(
 	props: ChatSidebarProps,

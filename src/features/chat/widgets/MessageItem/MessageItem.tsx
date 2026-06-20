@@ -1,9 +1,7 @@
 import { MarkdownContent } from "@chat/widgets/MarkdownContent/MarkdownContent";
-import {
-	type MessageItemProps,
-	useMessageItem,
-} from "@chat/widgets/MessageItem/hooks/useMessageItem";
+import { useMessageItem } from "@chat/widgets/MessageItem/hooks/useMessageItem";
 import styles from "@chat/widgets/MessageItem/MessageItem.module.css";
+import type { MessageItemProps } from "@chat/widgets/MessageItem/types";
 
 export function MessageItem(props: MessageItemProps) {
 	const messageItem = useMessageItem(props, styles);
@@ -25,7 +23,10 @@ export function MessageItem(props: MessageItemProps) {
 					</div>
 				)}
 				{messageItem.content() && (
-					<MarkdownContent content={messageItem.content()} />
+					<MarkdownContent
+						content={messageItem.content()}
+						isStreaming={messageItem.isStreaming()}
+					/>
 				)}
 			</div>
 		</article>

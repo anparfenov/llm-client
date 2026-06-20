@@ -1,42 +1,12 @@
-import type { Message } from "@chat/types";
+import type {
+	OllamaChatMessage,
+	OllamaChatRequest,
+	OllamaChatResponse,
+	SubmitChatRequest,
+	SubmitChatResponse,
+} from "@chat/api/types";
 
-type OllamaRole = "user" | "assistant" | "system";
-
-type OllamaChatMessage = {
-	role: OllamaRole;
-	content: string;
-	thinking?: string;
-};
-
-type OllamaChatRequest = {
-	model: string;
-	messages: OllamaChatMessage[];
-	stream: boolean;
-	think: boolean;
-};
-
-type OllamaChatResponse = {
-	done?: boolean;
-	message?: OllamaChatMessage;
-	error?: string;
-};
-
-type SubmitChatRequest = {
-	apiUrl: string;
-	model: string;
-	messages: Message[];
-	stream?: boolean;
-	fallbackContent: string;
-	connectionErrorContent: string;
-	think: boolean;
-	onContentDelta?: (delta: string) => void;
-	onThinkingDelta?: (delta: string) => void;
-};
-
-type SubmitChatResponse = {
-	content: string;
-	thinking?: string;
-};
+const streamDeltaBufferMs = 200;
 
 export async function submitOllamaChatMessage(
 	request: SubmitChatRequest,
@@ -68,6 +38,7 @@ export async function submitOllamaChatMessage(
 
 		return {
 			content: request.connectionErrorContent,
+			isError: true,
 		};
 	}
 
@@ -84,7 +55,8 @@ export async function submitOllamaChatMessage(
 		);
 
 		return {
-			content: data?.error || request.fallbackContent,
+			content: request.requestErrorContent,
+			isError: true,
 		};
 	}
 
@@ -120,7 +92,8 @@ async function readOllamaStreamResponse(
 		);
 
 		return {
-			content: data?.error || request.fallbackContent,
+			content: request.requestErrorContent,
+			isError: true,
 		};
 	}
 
@@ -137,6 +110,8 @@ async function readOllamaStreamResponse(
 	let buffer = "";
 	let content = "";
 	let thinking = "";
+	let streamErrorContent = "";
+	const deltaBuffer = createStreamDeltaBuffer(request, streamDeltaBufferMs);
 
 	const readLine = (line: string) => {
 		const data = parseOllamaJsonLine(line);
@@ -150,16 +125,17 @@ async function readOllamaStreamResponse(
 
 		if (delta) {
 			content += delta;
-			request.onContentDelta?.(delta);
+			deltaBuffer.addContent(delta);
 		}
 
 		if (thinkingDelta) {
 			thinking += thinkingDelta;
-			request.onThinkingDelta?.(thinkingDelta);
+			deltaBuffer.addThinking(thinkingDelta);
 		}
 
 		if (data.error) {
 			console.error("Ollama stream returned an error.", data.error);
+			streamErrorContent = request.requestErrorContent;
 		}
 	};
 
@@ -183,10 +159,12 @@ async function readOllamaStreamResponse(
 		}
 	} catch (error) {
 		console.error("Unable to read Ollama stream.", error);
+		deltaBuffer.flush();
 
 		return {
 			content: content || request.connectionErrorContent,
 			thinking,
+			isError: true,
 		};
 	}
 
@@ -196,13 +174,19 @@ async function readOllamaStreamResponse(
 		readLine(buffer);
 	}
 
+	deltaBuffer.flush();
+
 	if (!content) {
 		console.warn("Ollama returned an empty streamed response.");
 	}
 
 	return {
-		content: content || (thinking ? "" : request.fallbackContent),
+		content:
+			content ||
+			streamErrorContent ||
+			(thinking ? "" : request.fallbackContent),
 		thinking,
+		isError: Boolean(streamErrorContent && !content),
 	};
 }
 
@@ -210,6 +194,52 @@ function nextAnimationFrame(): Promise<void> {
 	return new Promise((resolve) => {
 		requestAnimationFrame(() => resolve());
 	});
+}
+
+function createStreamDeltaBuffer(
+	request: SubmitChatRequest,
+	delayMs: number,
+): {
+	addContent: (delta: string) => void;
+	addThinking: (delta: string) => void;
+	flush: () => void;
+} {
+	let contentDelta = "";
+	let thinkingDelta = "";
+	let flushTimeout: ReturnType<typeof setTimeout> | undefined;
+
+	const flush = () => {
+		if (flushTimeout) {
+			clearTimeout(flushTimeout);
+			flushTimeout = undefined;
+		}
+
+		if (contentDelta) {
+			request.onContentDelta?.(contentDelta);
+			contentDelta = "";
+		}
+
+		if (thinkingDelta) {
+			request.onThinkingDelta?.(thinkingDelta);
+			thinkingDelta = "";
+		}
+	};
+
+	const scheduleFlush = () => {
+		flushTimeout ??= setTimeout(flush, delayMs);
+	};
+
+	return {
+		addContent: (delta: string) => {
+			contentDelta += delta;
+			scheduleFlush();
+		},
+		addThinking: (delta: string) => {
+			thinkingDelta += delta;
+			scheduleFlush();
+		},
+		flush,
+	};
 }
 
 async function readOllamaResponse(
@@ -248,7 +278,9 @@ function parseOllamaJsonLine(line: string): OllamaChatResponse | null {
 	}
 }
 
-function toOllamaMessage(message: Message): OllamaChatMessage {
+function toOllamaMessage(
+	message: SubmitChatRequest["messages"][number],
+): OllamaChatMessage {
 	return {
 		role: message.role,
 		content: message.content,

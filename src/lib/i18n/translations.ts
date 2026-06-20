@@ -24,6 +24,7 @@ export const translations = {
 		pendingAssistantMessage: "Thinking...",
 		ollamaEmptyResponse: "No response received from Ollama.",
 		ollamaConnectionError: "Unable to reach Ollama. Check that it is running.",
+		ollamaRequestError: "Ollama could not complete the request.",
 	},
 	ru: {
 		appBrand: "LLM SaaS",
@@ -52,6 +53,7 @@ export const translations = {
 		ollamaEmptyResponse: "Ответ от Ollama не получен.",
 		ollamaConnectionError:
 			"Не удалось подключиться к Ollama. Проверьте, что она запущена.",
+		ollamaRequestError: "Ollama не смогла выполнить запрос.",
 	},
 } as const;
 

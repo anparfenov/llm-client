@@ -1,14 +1,13 @@
 import { submitOllamaChatMessage } from "@chat/api/ollamaChat";
 import { defaultChatModel, ollamaApiUrl } from "@chat/config/models";
 import { createInitialMessages } from "@chat/data/initialMessages";
+import type { ChatTranslate } from "@chat/hooks/types";
 import type { Message, SavedChat } from "@chat/types";
 import { useI18n } from "@lib/i18n";
 import { createSignal } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
 const savedChatsStorageKey = "llm-saas.chats";
-
-type Translate = ReturnType<typeof useI18n>["t"];
 
 export function useChat() {
 	const { t } = useI18n();
@@ -111,6 +110,7 @@ export function useChat() {
 			stream: true,
 			fallbackContent: t("ollamaEmptyResponse"),
 			connectionErrorContent: t("ollamaConnectionError"),
+			requestErrorContent: t("ollamaRequestError"),
 			think: isThinkingEnabled(),
 			onContentDelta: (delta) => {
 				updatePendingMessage(pendingMessageId, (message) => ({
@@ -132,7 +132,7 @@ export function useChat() {
 			...message,
 			content: response.content,
 			thinking: response.thinking,
-			status: "sent",
+			status: response.isError ? "error" : "sent",
 		}));
 		persistChats();
 		setIsSubmitting(false);
@@ -215,7 +215,7 @@ export function useChat() {
 	};
 }
 
-function loadSavedChats(t: Translate): SavedChat[] {
+function loadSavedChats(t: ChatTranslate): SavedChat[] {
 	const fallbackChat = createSavedChat(t);
 	const storedChats = localStorage.getItem(savedChatsStorageKey);
 
@@ -236,7 +236,7 @@ function loadSavedChats(t: Translate): SavedChat[] {
 }
 
 function createSavedChat(
-	t: Translate,
+	t: ChatTranslate,
 	existingIds = new Set<string>(),
 ): SavedChat {
 	const now = Date.now();
@@ -267,7 +267,7 @@ function createId(): string {
 	);
 }
 
-function createChatTitle(content: string, t: Translate): string {
+function createChatTitle(content: string, t: ChatTranslate): string {
 	const title = content.replace(/\s+/g, " ").trim();
 
 	return title ? title.slice(0, 48) : t("untitledChat");

@@ -1,21 +1,19 @@
-import type { Message } from "@chat/types";
+import type { MessageListProps } from "@chat/widgets/MessageList/types";
 
 import { useI18n } from "@lib/i18n";
 import { createEffect, on } from "solid-js";
 
-export type MessageListProps = {
-	messages: Message[];
-};
-
 export function useMessageList(props: MessageListProps) {
 	const { t } = useI18n();
-	let listElement: HTMLElement | undefined;
+	let scrollElement: HTMLElement | undefined;
 
 	const scrollToBottom = () => {
 		requestAnimationFrame(() => {
-			listElement?.scrollTo({
-				top: listElement.scrollHeight,
-				behavior: "auto",
+			requestAnimationFrame(() => {
+				scrollElement?.scrollTo({
+					top: scrollElement.scrollHeight,
+					behavior: "auto",
+				});
 			});
 		});
 	};
@@ -35,7 +33,8 @@ export function useMessageList(props: MessageListProps) {
 
 	return {
 		setListElement: (element: HTMLElement) => {
-			listElement = element;
+			scrollElement = element.parentElement ?? element;
+			scrollToBottom();
 		},
 		conversationLabel: () => t("conversationLabel"),
 	};

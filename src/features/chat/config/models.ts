@@ -1,7 +1,4 @@
-export type ChatModel = {
-	id: string;
-	label: string;
-};
+import type { ChatModel } from "@chat/config/types";
 
 export const chatModels: ChatModel[] = [
 	{

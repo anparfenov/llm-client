@@ -1,9 +1,7 @@
 import styles from "@chat/widgets/ChatSidebar/ChatSidebar.module.css";
 
-import {
-	type ChatSidebarProps,
-	useChatSidebar,
-} from "@chat/widgets/ChatSidebar/hooks/useChatSidebar";
+import { useChatSidebar } from "@chat/widgets/ChatSidebar/hooks/useChatSidebar";
+import type { ChatSidebarProps } from "@chat/widgets/ChatSidebar/types";
 import { For, Show } from "solid-js";
 
 export function ChatSidebar(props: ChatSidebarProps) {

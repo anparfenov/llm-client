@@ -1,8 +1,6 @@
 import styles from "@chat/widgets/ChatComposer/ChatComposer.module.css";
-import {
-	type ChatComposerProps,
-	useChatComposer,
-} from "@chat/widgets/ChatComposer/hooks/useChatComposer";
+import { useChatComposer } from "@chat/widgets/ChatComposer/hooks/useChatComposer";
+import type { ChatComposerProps } from "@chat/widgets/ChatComposer/types";
 
 export function ChatComposer(props: ChatComposerProps) {
 	const composer = useChatComposer(props, styles);

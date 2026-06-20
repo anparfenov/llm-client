@@ -1,16 +1,8 @@
+import type {
+	ChatComposerProps,
+	ChatComposerStyles,
+} from "@chat/widgets/ChatComposer/types";
 import { useI18n } from "@lib/i18n";
-
-export type ChatComposerProps = {
-	draft: string;
-	isSubmitting: boolean;
-	isSidebarCollapsed: boolean;
-	isThinkingEnabled: boolean;
-	onDraftChange: (draft: string) => void;
-	onSendMessage: () => Promise<void>;
-	onThinkingEnabledChange: (enabled: boolean) => void;
-};
-
-type ChatComposerStyles = Record<string, string>;
 
 export function useChatComposer(
 	props: ChatComposerProps,

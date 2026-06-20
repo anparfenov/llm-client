@@ -1,8 +1,6 @@
 import styles from "@chat/widgets/ChatHeader/ChatHeader.module.css";
-import {
-	type ChatHeaderProps,
-	useChatHeader,
-} from "@chat/widgets/ChatHeader/hooks/useChatHeader";
+import { useChatHeader } from "@chat/widgets/ChatHeader/hooks/useChatHeader";
+import type { ChatHeaderProps } from "@chat/widgets/ChatHeader/types";
 
 export function ChatHeader(props: ChatHeaderProps) {
 	const header = useChatHeader();

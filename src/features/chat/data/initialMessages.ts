@@ -1,7 +1,5 @@
 import type { Message } from "@chat/types";
-import type { TranslationKey } from "@lib/i18n";
-
-type Translate = (key: TranslationKey) => string;
+import type { Translate } from "@chat/data/types";
 
 export const createInitialMessages = (t: Translate): Message[] => [
 	{

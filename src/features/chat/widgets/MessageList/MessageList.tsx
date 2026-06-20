@@ -1,9 +1,7 @@
 import { MessageItem } from "@chat/widgets/MessageItem/MessageItem";
-import {
-	type MessageListProps,
-	useMessageList,
-} from "@chat/widgets/MessageList/hooks/useMessageList";
+import { useMessageList } from "@chat/widgets/MessageList/hooks/useMessageList";
 import styles from "@chat/widgets/MessageList/MessageList.module.css";
+import type { MessageListProps } from "@chat/widgets/MessageList/types";
 import { For } from "solid-js";
 
 export function MessageList(props: MessageListProps) {

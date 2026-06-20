@@ -1,40 +1,26 @@
 import styles from "@chat/widgets/MarkdownContent/MarkdownContent.module.css";
+import type {
+	Block,
+	InlineSegment,
+	TableAlignment,
+	UseMarkdownContentProps,
+} from "@chat/widgets/MarkdownContent/types";
+import { createMemo } from "solid-js";
 import type { JSX } from "solid-js";
 
-type UseMarkdownContentProps = {
-	content: string;
-};
-
-type Block =
-	| { type: "blockquote"; content: string[] }
-	| { type: "code"; code: string; language?: string }
-	| { type: "heading"; depth: number; content: string }
-	| { type: "list"; ordered: boolean; items: string[] }
-	| { type: "paragraph"; content: string }
-	| {
-			type: "table";
-			alignments: TableAlignment[];
-			headers: string[];
-			rows: string[][];
-	  };
-
-type TableAlignment = "center" | "left" | "right" | undefined;
-
-type InlineSegment =
-	| { type: "bold"; content: string }
-	| { type: "code"; content: string }
-	| { type: "italic"; content: string }
-	| { type: "link"; content: string; href: string }
-	| { type: "text"; content: string };
-
 export function useMarkdownContent(props: UseMarkdownContentProps) {
+	const blocks = createMemo(() =>
+		parseBlocks(props.content, props.isStreaming ?? false),
+	);
+
 	return {
-		blocks: () => parseBlocks(props.content),
+		blocks,
 		renderBlock,
 	};
 }
 
-function parseBlocks(markdown: string): Block[] {
+// TODO: make streaming markdown parsing
+function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
 	const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
 	const blocks: Block[] = [];
 	let index = 0;
@@ -47,7 +33,7 @@ function parseBlocks(markdown: string): Block[] {
 			continue;
 		}
 
-		const fenceMatch = line.match(/^```(\S*)\s*$/);
+		const fenceMatch = line.match(/^```\s*(\S*)?.*$/);
 
 		if (fenceMatch) {
 			const codeLines: string[] = [];
@@ -58,12 +44,15 @@ function parseBlocks(markdown: string): Block[] {
 				index += 1;
 			}
 
+			const hasClosingFence = index < lines.length;
+
 			blocks.push({
 				type: "code",
 				language: fenceMatch[1] || undefined,
 				code: codeLines.join("\n"),
+				isOpen: isStreaming && !hasClosingFence,
 			});
-			index += index < lines.length ? 1 : 0;
+			index += hasClosingFence ? 1 : 0;
 			continue;
 		}
 
@@ -128,6 +117,11 @@ function parseBlocks(markdown: string): Block[] {
 			!startsBlock(lines[index] ?? "", lines[index + 1])
 		) {
 			paragraphLines.push(lines[index] ?? "");
+			index += 1;
+		}
+
+		if (paragraphLines.length === 0) {
+			paragraphLines.push(line);
 			index += 1;
 		}
 
@@ -282,7 +276,7 @@ function renderBlock(block: Block, index: number): JSX.Element {
 			);
 		case "code":
 			return (
-				<pre data-language={block.language}>
+				<pre data-language={block.language} data-streaming={block.isOpen}>
 					<code>{block.code}</code>
 				</pre>
 			);

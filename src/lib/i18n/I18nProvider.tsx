@@ -4,24 +4,10 @@ import {
 	type TranslationKey,
 	translations,
 } from "@lib/i18n/translations";
-import {
-	type Accessor,
-	createContext,
-	createSignal,
-	type JSX,
-	useContext,
-} from "solid-js";
-
-type I18nContextValue = {
-	locale: Accessor<Locale>;
-	t: (key: TranslationKey) => string;
-};
+import type { I18nContextValue, I18nProviderProps } from "@lib/i18n/types";
+import { createContext, createSignal, useContext } from "solid-js";
 
 const I18nContext = createContext<I18nContextValue>();
-
-type I18nProviderProps = {
-	children: JSX.Element;
-};
 
 export function I18nProvider(props: I18nProviderProps) {
 	const [locale] = createSignal(getInitialLocale());
