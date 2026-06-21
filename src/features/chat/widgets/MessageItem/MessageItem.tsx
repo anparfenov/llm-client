@@ -10,9 +10,6 @@ export function MessageItem(props: MessageItemProps) {
 		<article
 			class={`${styles.messageRow} ${messageItem.roleClass()} ${messageItem.statusClass()}`}
 		>
-			<div class={styles.avatar} aria-hidden="true">
-				{messageItem.avatarLabel()}
-			</div>
 			<div class={styles.messageBubble}>
 				{messageItem.hasThinking() && (
 					<div class={styles.thinkingTrace}>

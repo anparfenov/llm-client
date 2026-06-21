@@ -1,24 +1,7 @@
 .messageRow {
 	display: grid;
-	grid-template-columns: var(--size-chat-row-control) minmax(0, 1fr);
-	gap: 12px;
+	grid-template-columns: minmax(0, 1fr);
 	align-items: start;
-}
-
-.user {
-	grid-template-columns: minmax(0, 1fr) var(--size-chat-row-control);
-}
-
-.avatar {
-	display: grid;
-	width: var(--size-chat-row-control);
-	height: var(--size-chat-row-control);
-	place-items: center;
-	border-radius: var(--radius-control);
-	color: var(--color-on-dark);
-	background: var(--color-brand);
-	font-size: 12px;
-	font-weight: 800;
 }
 
 .messageBubble {
@@ -31,14 +14,7 @@
 	box-shadow: var(--shadow-bubble);
 }
 
-.user .avatar {
-	grid-column: 2;
-	background: var(--color-user);
-}
-
 .user .messageBubble {
-	grid-column: 1;
-	grid-row: 1;
 	justify-self: end;
 	color: var(--color-on-dark);
 	background: var(--color-user);
@@ -86,23 +62,7 @@
 }
 
 @media (max-width: 640px) {
-	.messageRow,
-	.user {
-		grid-template-columns: 32px minmax(0, 1fr);
-	}
-
-	.messageRow .avatar {
-		width: 32px;
-		height: 32px;
-		font-size: 11px;
-	}
-
-	.user .avatar {
-		grid-column: 1;
-	}
-
 	.user .messageBubble {
-		grid-column: 2;
 		justify-self: start;
 	}
 }

@@ -17,8 +17,6 @@ export const translations = {
 		thinkingModeOn: "Thinking on",
 		thinkingModeOff: "Thinking off",
 		thinkingLabel: "Thinking",
-		assistantAvatar: "AI",
-		userAvatar: "You",
 		conversationLabel: "Conversation",
 		initialAssistantMessage: "Hi. Send a message and I will render it here.",
 		pendingAssistantMessage: "Thinking...",
@@ -44,8 +42,6 @@ export const translations = {
 		thinkingModeOn: "Думает: вкл",
 		thinkingModeOff: "Думает: выкл",
 		thinkingLabel: "Ход мыслей",
-		assistantAvatar: "ИИ",
-		userAvatar: "Вы",
 		conversationLabel: "Диалог",
 		initialAssistantMessage:
 			"Привет. Отправьте сообщение, и я покажу его здесь.",

@@ -10,8 +10,6 @@ export function useMessageItem(
 ) {
 	const { t } = useI18n();
 
-	const avatarLabel = () =>
-		props.message.role === "assistant" ? t("assistantAvatar") : t("userAvatar");
 	const hasThinking = () => Boolean(props.message.thinking?.trim());
 	const content = () =>
 		props.message.status === "pending" &&
@@ -27,7 +25,6 @@ export function useMessageItem(
 			: "";
 
 	return {
-		avatarLabel,
 		hasThinking,
 		content,
 		isStreaming,

@@ -1,10 +1,11 @@
 .chatPage {
+	--gap: 18px;
 	display: grid;
 	grid-template-columns: minmax(
 			var(--size-chat-sidebar-min),
 			var(--size-chat-sidebar-max)
 		) 1fr;
-	gap: 18px;
+	gap: var(--gap);
 	justify-content: center;
 	height: 100dvh;
 	min-height: 0;
@@ -23,6 +24,7 @@
 	min-height: 0;
 	overflow-y: auto;
 	overscroll-behavior: contain;
+	padding-right: var(--gap);
 }
 
 @media (max-width: 760px) {
