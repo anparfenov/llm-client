@@ -24,8 +24,8 @@ Run `npm run build` after code changes unless the edit is documentation-only.
 ## Architecture Notes
 
 - Chat state and send logic belong in hooks under `src/features/chat/hooks/`.
-- Components under `src/features/chat/components/` should stay mostly presentational.
-- Each component has its own folder with `index.tsx` and a colocated `*.module.css`.
+- Widgets under `src/features/chat/widgets/` should stay mostly presentational.
+- Each widget has its own folder with a named `*.tsx` file and a colocated `*.module.css`.
 - Shared app colors and shadows are CSS variables in `src/styles.css`.
 - Keep feature imports relative and local to the chat feature where possible.
 
