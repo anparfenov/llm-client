@@ -24,8 +24,7 @@
 	color: var(--color-on-dark);
 }
 
-.user .messageBubble code,
-.user .messageBubble pre {
+.user .messageBubble :not(pre) > code {
 	color: var(--color-text-primary);
 }
 

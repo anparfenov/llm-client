@@ -20,6 +20,18 @@
 	--color-user-hover: #1d3a87;
 	--color-link: #0f5fda;
 	--color-code-surface: #f3f4f6;
+	--color-code-block-surface: #f8fafc;
+	--color-code-border: #d8dee4;
+	--color-code-text: #24292f;
+	--color-code-comment: #6e7781;
+	--color-code-function: #8250df;
+	--color-code-keyword: #cf222e;
+	--color-code-number: #0550ae;
+	--color-code-operator: #cf222e;
+	--color-code-property: #953800;
+	--color-code-punctuation: #57606a;
+	--color-code-string: #0a3069;
+	--color-code-tag: #116329;
 	--color-error-text: #9f1239;
 	--color-error-border: #fecdd3;
 	--color-error-surface: #fff1f2;

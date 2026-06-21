@@ -5,9 +5,24 @@ import { ChatSidebar } from "@chat/widgets/ChatSidebar/ChatSidebar";
 import { MessageList } from "@chat/widgets/MessageList/MessageList";
 import { createSignal } from "solid-js";
 
+const sidebarCollapsedStorageKey = "llm-saas.sidebar-collapsed";
+
 export function ChatPage() {
 	const chat = useChat();
-	const [isChatListCollapsed, setIsChatListCollapsed] = createSignal(false);
+	const [isChatListCollapsed, setIsChatListCollapsed] = createSignal(
+		localStorage.getItem(sidebarCollapsedStorageKey) === "true",
+	);
+	const toggleChatList = () => {
+		setIsChatListCollapsed((isCollapsed) => {
+			const nextIsCollapsed = !isCollapsed;
+
+			localStorage.setItem(
+				sidebarCollapsedStorageKey,
+				String(nextIsCollapsed),
+			);
+			return nextIsCollapsed;
+		});
+	};
 
 	return (
 		<main
@@ -18,9 +33,7 @@ export function ChatPage() {
 				activeChatId={chat.activeChatId()}
 				isSubmitting={chat.isSubmitting()}
 				isCollapsed={isChatListCollapsed()}
-				onToggleCollapse={() =>
-					setIsChatListCollapsed((isCollapsed) => !isCollapsed)
-				}
+				onToggleCollapse={toggleChatList}
 				onNewChat={chat.startNewChat}
 				onSelectChat={chat.selectChat}
 				onRenameChat={chat.renameChat}

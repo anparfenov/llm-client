@@ -5,6 +5,10 @@ import type {
 	TableAlignment,
 	UseMarkdownContentProps,
 } from "@chat/widgets/MarkdownContent/types";
+import {
+	tokenizeCode,
+	type SyntaxTokenType,
+} from "@chat/widgets/MarkdownContent/utils/tokenizeCode";
 import { createMemo } from "solid-js";
 import type { JSX } from "solid-js";
 
@@ -277,7 +281,7 @@ function renderBlock(block: Block, index: number): JSX.Element {
 		case "code":
 			return (
 				<pre data-language={block.language} data-streaming={block.isOpen}>
-					<code>{block.code}</code>
+					<code>{renderCode(block.code, block.language)}</code>
 				</pre>
 			);
 		case "heading":
@@ -301,6 +305,18 @@ function renderBlock(block: Block, index: number): JSX.Element {
 		case "table":
 			return renderTable(block);
 	}
+}
+
+function renderCode(code: string, language?: string): JSX.Element[] {
+	return tokenizeCode(code, language).map((token) => (
+		<span class={getTokenClass(token.type)}>{token.content}</span>
+	));
+}
+
+function getTokenClass(type: SyntaxTokenType): string | undefined {
+	return type === "text"
+		? undefined
+		: styles[`token${type[0].toUpperCase()}${type.slice(1)}`];
 }
 
 function renderTable(block: Extract<Block, { type: "table" }>): JSX.Element {
