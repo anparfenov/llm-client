@@ -5,7 +5,6 @@
 	--composer-input-max-height: 180px;
 	--composer-control-min-height: 40px;
 	--composer-toggle-icon-size: 16px;
-	--composer-send-min-width: 76px;
 
 	position: fixed;
 	bottom: 0;
@@ -87,15 +86,17 @@
 }
 
 .sendButton {
-	min-width: var(--composer-send-min-width);
+	display: grid;
+	min-width: var(--composer-control-min-height);
 	min-height: var(--composer-control-min-height);
-	padding: 0 16px;
+	padding: 0;
+	place-items: center;
 	color: var(--color-on-dark);
 	border: 0;
 	border-radius: var(--radius-control);
 	background: var(--color-text-primary);
 	font-weight: 700;
-	flex: 1 0 auto;
+	flex: 0 0 var(--composer-control-min-height);
 }
 
 .sendButton:not(:disabled):hover {

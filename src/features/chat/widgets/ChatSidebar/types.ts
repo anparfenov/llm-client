@@ -6,6 +6,7 @@ export type ChatSidebarProps = {
 	isSubmitting: boolean;
 	isCollapsed: boolean;
 	onToggleCollapse: () => void;
+	onNewChat: () => void;
 	onSelectChat: (chatId: string) => void;
 	onRenameChat: (chatId: string, title: string) => void;
 	onRemoveChat: (chatId: string) => void;

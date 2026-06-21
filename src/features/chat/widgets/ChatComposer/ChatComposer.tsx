@@ -1,6 +1,7 @@
 import styles from "@chat/widgets/ChatComposer/ChatComposer.module.css";
 import { useChatComposer } from "@chat/widgets/ChatComposer/hooks/useChatComposer";
 import type { ChatComposerProps } from "@chat/widgets/ChatComposer/types";
+import Send from "lucide-solid/icons/send";
 
 export function ChatComposer(props: ChatComposerProps) {
 	const composer = useChatComposer(props, styles);
@@ -34,8 +35,10 @@ export function ChatComposer(props: ChatComposerProps) {
 					class={styles.sendButton}
 					type="submit"
 					disabled={composer.isSendDisabled()}
+					aria-label={composer.labels.sendButton()}
+					title={composer.labels.sendButton()}
 				>
-					{composer.labels.sendButton()}
+					<Send size={18} />
 				</button>
 			</div>
 		</form>

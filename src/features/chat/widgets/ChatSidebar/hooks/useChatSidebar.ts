@@ -75,10 +75,6 @@ export function useChatSidebar(
 	const isRenaming = (chat: SavedChat) => renamingChatId() === chat.id;
 	const sidebarClass = () =>
 		`${styles.sidebar} ${props.isCollapsed ? styles.collapsed : ""}`;
-	const collapsedChatButtonClass = (chat: SavedChat) =>
-		`${styles.collapsedChatButton} ${isActiveChat(chat) ? styles.active : ""}`;
-	const chatButtonClass = (chat: SavedChat) =>
-		`${styles.chatButton} ${isActiveChat(chat) ? styles.active : ""}`;
 	const collapseLabel = () =>
 		props.isCollapsed ? t("expandChats") : t("collapseChats");
 
@@ -86,16 +82,17 @@ export function useChatSidebar(
 		renamingChatId,
 		draftTitle,
 		labels: {
+			brand: () => t("appBrand"),
+			title: () => t("chatTitle"),
 			chats: () => t("chatsLabel"),
+			newChat: () => t("newChat"),
 			rename: () => t("renameChat"),
 			remove: () => t("removeChat"),
 			cancelRename: () => t("cancelRename"),
 		},
 		sidebarClass,
-		collapsedChatButtonClass,
-		chatButtonClass,
 		collapseLabel,
-		collapseIcon: () => (props.isCollapsed ? ">" : "<"),
+		isActiveChat,
 		isRenaming,
 		startRenaming,
 		stopRenaming,

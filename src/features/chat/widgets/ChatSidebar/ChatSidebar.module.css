@@ -29,11 +29,20 @@
 	margin: 0;
 }
 
+.eyebrow {
+	margin: 0 0 3px;
+	color: var(--color-text-subtle);
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 16px;
+	text-transform: uppercase;
+}
+
 .title {
 	margin: 0;
 	color: var(--color-text-primary);
-	font-size: 15px;
-	line-height: 18px;
+	font-size: 23px;
+	line-height: 28px;
 }
 
 .collapseButton {
@@ -51,7 +60,45 @@
 }
 
 .collapseButton:not(:disabled):hover {
-	background: var(--color-surface-muted);
+	color: var(--color-text-primary);
+	border-color: var(--color-control-hover-border);
+	background: var(--color-surface-hover);
+}
+
+.newChatButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	min-height: var(--size-chat-row-control);
+	margin-bottom: 16px;
+	padding: 0 12px;
+	color: var(--color-text-primary);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-control);
+	background: var(--color-surface);
+	font-weight: 700;
+}
+
+.newChatButton:not(:disabled):hover {
+	color: var(--color-text-primary);
+	border-color: var(--color-control-hover-border);
+	background: var(--color-surface-hover);
+}
+
+.collapsed .newChatButton {
+	width: var(--sidebar-collapse-button-size);
+	min-height: var(--sidebar-collapse-button-size);
+	margin: 12px 0 0;
+	padding: 0;
+}
+
+.chatListTitle {
+	margin: 0 0 8px;
+	color: var(--color-text-primary);
+	font-size: 15px;
+	line-height: 18px;
 }
 
 .chatList {
@@ -91,7 +138,9 @@
 }
 
 .collapsedChatButton:not(:disabled):hover {
-	background: var(--color-surface-muted);
+	color: var(--color-text-primary);
+	border-color: var(--color-control-hover-border);
+	background: var(--color-surface-hover);
 }
 
 .chatRow {
@@ -126,7 +175,8 @@
 }
 
 .chatButton:not(:disabled):hover {
-	background: var(--color-surface-muted);
+	color: var(--color-text-primary);
+	background: var(--color-surface-hover);
 }
 
 .renameButton,
@@ -148,7 +198,9 @@
 .renameButton:not(:disabled):hover,
 .removeButton:not(:disabled):hover,
 .renameAction:not(:disabled):hover {
-	background: var(--color-surface-muted);
+	color: var(--color-text-primary);
+	border-color: var(--color-control-hover-border);
+	background: var(--color-surface-hover);
 }
 
 .removeButton:not(:disabled):hover {
@@ -193,6 +245,12 @@
 	background: var(--color-user);
 }
 
+.collapsedChatButton.active:not(:disabled):hover {
+	color: var(--color-on-dark);
+	border-color: var(--color-user-hover);
+	background: var(--color-user-hover);
+}
+
 @media (max-width: 760px) {
 	.sidebar {
 		max-height: 150px;
@@ -208,6 +266,6 @@
 		flex-direction: row;
 		overflow-x: auto;
 		overflow-y: hidden;
-		padding: 0 0 2px;
+		padding: 12px 0 2px;
 	}
 }

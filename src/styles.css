@@ -9,11 +9,13 @@
 	--color-surface: #ffffff;
 	--color-surface-muted: #f8fafc;
 	--color-surface-hover: #f0f2f5;
+	--color-control-hover-border: #aeb7c3;
 	--color-border: #d7dce3;
 	--color-border-soft: #e1e4ea;
 	--color-border-thinking: #eaecf0;
 	--color-brand: #0f766e;
 	--color-user: #2447a3;
+	--color-user-hover: #1d3a87;
 	--color-link: #0f5fda;
 	--color-code-surface: #f3f4f6;
 	--color-error-text: #9f1239;
