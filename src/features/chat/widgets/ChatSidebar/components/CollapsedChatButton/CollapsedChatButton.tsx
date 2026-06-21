@@ -1,5 +1,6 @@
 import type { SavedChat } from "@chat/types";
-import styles from "@chat/widgets/ChatSidebar/ChatSidebar.module.css";
+import { IconButton } from "@chat/widgets/ChatSidebar/components/IconButton/IconButton";
+import styles from "@chat/widgets/ChatSidebar/components/CollapsedChatButton/CollapsedChatButton.module.css";
 
 type CollapsedChatButtonProps = {
 	chat: SavedChat;
@@ -11,15 +12,15 @@ type CollapsedChatButtonProps = {
 
 export function CollapsedChatButton(props: CollapsedChatButtonProps) {
 	return (
-		<button
-			class={`${styles.collapsedChatButton} ${props.isActive ? styles.active : ""}`}
-			type="button"
+		<IconButton
+			class={styles.button}
 			disabled={props.isSubmitting}
-			aria-label={props.chat.title}
-			title={props.chat.title}
+			isActive={props.isActive}
+			label={props.chat.title}
+			layout="compact"
 			onClick={props.onSelect}
 		>
 			{props.label}
-		</button>
+		</IconButton>
 	);
 }

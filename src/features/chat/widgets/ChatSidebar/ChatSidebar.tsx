@@ -1,12 +1,13 @@
 import styles from "@chat/widgets/ChatSidebar/ChatSidebar.module.css";
 
 import { ChatListItem } from "@chat/widgets/ChatSidebar/components/ChatListItem";
-import { CollapsedChatButton } from "@chat/widgets/ChatSidebar/components/CollapsedChatButton";
+import { CollapsedChatButton } from "@chat/widgets/ChatSidebar/components/CollapsedChatButton/CollapsedChatButton";
+import { IconButton } from "@chat/widgets/ChatSidebar/components/IconButton/IconButton";
+import { NewChatButton } from "@chat/widgets/ChatSidebar/components/NewChatButton/NewChatButton";
 import { useChatSidebar } from "@chat/widgets/ChatSidebar/hooks/useChatSidebar";
 import type { ChatSidebarProps } from "@chat/widgets/ChatSidebar/types";
 import PanelLeftClose from "lucide-solid/icons/panel-left-close";
 import PanelLeftOpen from "lucide-solid/icons/panel-left-open";
-import Plus from "lucide-solid/icons/plus";
 import { For, Show } from "solid-js";
 
 export function ChatSidebar(props: ChatSidebarProps) {
@@ -21,32 +22,26 @@ export function ChatSidebar(props: ChatSidebarProps) {
 						<h1 class={styles.title}>{sidebar.labels.title()}</h1>
 					</div>
 				</Show>
-				<button
-					class={styles.collapseButton}
-					type="button"
-					aria-expanded={!props.isCollapsed}
-					aria-label={sidebar.collapseLabel()}
-					title={sidebar.collapseLabel()}
+				<IconButton
+					ariaExpanded={!props.isCollapsed}
+					label={sidebar.collapseLabel()}
+					layout="compact"
 					onClick={sidebar.toggleCollapse}
 				>
-					<Show when={props.isCollapsed} fallback={<PanelLeftClose size={18} />}>
+					<Show
+						when={props.isCollapsed}
+						fallback={<PanelLeftClose size={18} />}
+					>
 						<PanelLeftOpen size={18} />
 					</Show>
-				</button>
+				</IconButton>
 			</div>
-			<button
-				class={styles.newChatButton}
-				type="button"
-				disabled={props.isSubmitting}
-				aria-label={sidebar.labels.newChat()}
-				title={sidebar.labels.newChat()}
-				onClick={props.onNewChat}
-			>
-				<Plus size={18} />
-				<Show when={!props.isCollapsed}>
-					<span>{sidebar.labels.newChat()}</span>
-				</Show>
-			</button>
+			<NewChatButton
+				isCollapsed={props.isCollapsed}
+				isSubmitting={props.isSubmitting}
+				label={sidebar.labels.newChat()}
+				onNewChat={props.onNewChat}
+			/>
 			<Show when={props.isCollapsed}>
 				<div class={styles.collapsedChatList}>
 					<For each={props.chats}>

@@ -1,0 +1,41 @@
+.button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--color-text-secondary);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-control);
+	background: var(--color-surface);
+}
+
+.compact {
+	width: var(--size-chat-row-control);
+	height: var(--size-chat-row-control);
+	padding: 0;
+}
+
+.wide {
+	gap: 8px;
+	width: 100%;
+	min-height: var(--size-chat-row-control);
+	padding: 0 12px;
+	font-weight: 700;
+}
+
+.button:not(:disabled):hover {
+	color: var(--color-text-primary);
+	border-color: var(--color-control-hover-border);
+	background: var(--color-surface-hover);
+}
+
+.active {
+	color: var(--color-on-dark);
+	border-color: var(--color-user);
+	background: var(--color-user);
+}
+
+.active:not(:disabled):hover {
+	color: var(--color-on-dark);
+	border-color: var(--color-user-hover);
+	background: var(--color-user-hover);
+}

@@ -1,6 +1,6 @@
 export const translations = {
 	en: {
-		appBrand: "LLM SaaS",
+		appBrand: "LLM Chat",
 		chatTitle: "Chat",
 		chatsLabel: "Chats",
 		collapseChats: "Collapse chat list",
@@ -11,7 +11,7 @@ export const translations = {
 		removeChat: "Remove chat",
 		cancelRename: "Cancel rename",
 		messageInputLabel: "Message",
-		messageInputPlaceholder: "Message LLM SaaS...",
+		messageInputPlaceholder: "Message LLM Chat...",
 		sendMessage: "Send",
 		sendingMessage: "Sending",
 		thinkingModeOn: "Thinking on",
@@ -27,7 +27,7 @@ export const translations = {
 		ollamaRequestError: "Ollama could not complete the request.",
 	},
 	ru: {
-		appBrand: "LLM SaaS",
+		appBrand: "LLM Chat",
 		chatTitle: "Чат",
 		chatsLabel: "Чаты",
 		collapseChats: "Свернуть список чатов",
@@ -38,7 +38,7 @@ export const translations = {
 		removeChat: "Удалить чат",
 		cancelRename: "Отменить переименование",
 		messageInputLabel: "Сообщение",
-		messageInputPlaceholder: "Сообщение для LLM SaaS...",
+		messageInputPlaceholder: "Сообщение для LLM Chat...",
 		sendMessage: "Отправить",
 		sendingMessage: "Отправка",
 		thinkingModeOn: "Думает: вкл",

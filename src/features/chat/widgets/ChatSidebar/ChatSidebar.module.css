@@ -1,5 +1,4 @@
 .sidebar {
-	--sidebar-collapse-button-size: 34px;
 	--sidebar-chat-title-padding-x: 10px;
 
 	display: flex;
@@ -14,7 +13,7 @@
 
 .collapsed {
 	align-items: center;
-	padding: 10px;
+	padding: 8px;
 }
 
 .header {
@@ -45,55 +44,6 @@
 	line-height: 28px;
 }
 
-.collapseButton {
-	display: grid;
-	min-width: var(--sidebar-collapse-button-size);
-	min-height: var(--sidebar-collapse-button-size);
-	padding: 0;
-	place-items: center;
-	color: var(--color-text-secondary);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-control);
-	background: var(--color-surface);
-	font-size: 14px;
-	font-weight: 900;
-}
-
-.collapseButton:not(:disabled):hover {
-	color: var(--color-text-primary);
-	border-color: var(--color-control-hover-border);
-	background: var(--color-surface-hover);
-}
-
-.newChatButton {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	width: 100%;
-	min-height: var(--size-chat-row-control);
-	margin-bottom: 16px;
-	padding: 0 12px;
-	color: var(--color-text-primary);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-control);
-	background: var(--color-surface);
-	font-weight: 700;
-}
-
-.newChatButton:not(:disabled):hover {
-	color: var(--color-text-primary);
-	border-color: var(--color-control-hover-border);
-	background: var(--color-surface-hover);
-}
-
-.collapsed .newChatButton {
-	width: var(--sidebar-collapse-button-size);
-	min-height: var(--sidebar-collapse-button-size);
-	margin: 12px 0 0;
-	padding: 0;
-}
-
 .chatListTitle {
 	margin: 0 0 8px;
 	color: var(--color-text-primary);
@@ -120,27 +70,6 @@
 	align-items: center;
 	overflow-y: auto;
 	padding: 12px 0 0;
-}
-
-.collapsedChatButton {
-	display: grid;
-	width: var(--size-chat-row-control);
-	height: var(--size-chat-row-control);
-	padding: 0;
-	place-items: center;
-	color: var(--color-text-secondary);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-control);
-	background: var(--color-surface);
-	font-size: 13px;
-	font-weight: 900;
-	line-height: 13px;
-}
-
-.collapsedChatButton:not(:disabled):hover {
-	color: var(--color-text-primary);
-	border-color: var(--color-control-hover-border);
-	background: var(--color-surface-hover);
 }
 
 .chatRow {
@@ -237,18 +166,6 @@
 	color: var(--color-text-primary);
 	border-color: var(--color-border);
 	background: var(--color-surface-muted);
-}
-
-.collapsedChatButton.active {
-	color: var(--color-on-dark);
-	border-color: var(--color-user);
-	background: var(--color-user);
-}
-
-.collapsedChatButton.active:not(:disabled):hover {
-	color: var(--color-on-dark);
-	border-color: var(--color-user-hover);
-	background: var(--color-user-hover);
 }
 
 @media (max-width: 760px) {
