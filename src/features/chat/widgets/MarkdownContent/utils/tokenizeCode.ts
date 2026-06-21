@@ -189,13 +189,17 @@ function matchToken(
 		}
 	}
 
-	const string = code.match(/^(?:"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'|`(?:\\[\s\S]|[^`\\])*`)/)?.[0];
+	const string = code.match(
+		/^(?:"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'|`(?:\\[\s\S]|[^`\\])*`)/,
+	)?.[0];
 
 	if (string) {
 		return { type: "string", content: string };
 	}
 
-	const number = code.match(/^\b(?:0[xob][\da-f]+|\d+(?:\.\d+)?(?:e[+-]?\d+)?)\b/i)?.[0];
+	const number = code.match(
+		/^\b(?:0[xob][\da-f]+|\d+(?:\.\d+)?(?:e[+-]?\d+)?)\b/i,
+	)?.[0];
 
 	if (number) {
 		return { type: "number", content: number };
@@ -218,15 +222,19 @@ function matchToken(
 			return { type: "function", content: identifier };
 		}
 
-		if ((language === "json" || language === "style") && /^\s*:/.test(following)) {
+		if (
+			(language === "json" || language === "style") &&
+			/^\s*:/.test(following)
+		) {
 			return { type: "property", content: identifier };
 		}
 
 		return { type: "text", content: identifier };
 	}
 
-	const operator = code.match(/^(?:=>|===?|!==?|\?\?|\?\.|&&|\|\||\+\+|--|\*\*|[+\-*/%=&|!<>~?:])/)
-		?.[0];
+	const operator = code.match(
+		/^(?:=>|===?|!==?|\?\?|\?\.|&&|\|\||\+\+|--|\*\*|[+\-*/%=&|!<>~?:])/,
+	)?.[0];
 
 	if (operator) {
 		return { type: "operator", content: operator };

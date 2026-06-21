@@ -16,10 +16,7 @@ export function ChatPage() {
 		setIsChatListCollapsed((isCollapsed) => {
 			const nextIsCollapsed = !isCollapsed;
 
-			localStorage.setItem(
-				sidebarCollapsedStorageKey,
-				String(nextIsCollapsed),
-			);
+			localStorage.setItem(sidebarCollapsedStorageKey, String(nextIsCollapsed));
 			return nextIsCollapsed;
 		});
 	};
