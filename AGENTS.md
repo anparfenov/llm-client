@@ -56,3 +56,7 @@ Run `npm run build` after code changes unless the edit is documentation-only.
 - Keep the server dependency-free unless a new dependency is clearly justified.
 - Preserve same-origin and CSRF checks for `/api/chat`.
 - Preserve `X-Accel-Buffering: no`, no-store cache headers, and streaming writes for Ollama responses.
+
+## Git
+
+- add emoji to commit messages
