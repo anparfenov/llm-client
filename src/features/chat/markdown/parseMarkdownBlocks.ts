@@ -1,7 +1,10 @@
 import type { Block, TableAlignment } from "./types";
 
-// TODO: make streaming markdown parsing
 export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
+	if (!markdown) {
+		return [];
+	}
+
 	const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
 	const blocks: Block[] = [];
 	let index = 0;

@@ -14,9 +14,17 @@ import { createMemo } from "solid-js";
 import type { JSX } from "solid-js";
 
 export function useMarkdownContent(props: UseMarkdownContentProps) {
-	const blocks = createMemo(() =>
-		parseBlocks(props.content, props.isStreaming ?? false),
-	);
+	let parsedContentLength = 0;
+	const blocks = createMemo<Block[]>((existingBlocks) => {
+		const content = props.content;
+		const newContent = content.slice(parsedContentLength);
+
+		parsedContentLength = content.length;
+
+		const newBlocks = parseBlocks(newContent, props.isStreaming ?? false);
+
+		return existingBlocks.concat(newBlocks);
+	}, []);
 
 	return {
 		blocks,
