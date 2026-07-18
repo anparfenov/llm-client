@@ -11,7 +11,8 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@chat/*": ["./src/features/chat/*"],
-			"@lib/*": ["./src/lib/*"]
+			"@lib/*": ["./src/lib/*"],
+			"@pages/*": ["./src/pages/*"]
 		},
 		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,
