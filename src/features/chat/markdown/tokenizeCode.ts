@@ -1,20 +1,4 @@
-export type SyntaxTokenType =
-	| "comment"
-	| "function"
-	| "keyword"
-	| "literal"
-	| "number"
-	| "operator"
-	| "property"
-	| "punctuation"
-	| "string"
-	| "tag"
-	| "text";
-
-export type SyntaxToken = {
-	content: string;
-	type: SyntaxTokenType;
-};
+import type { SyntaxToken } from "./types";
 
 const commonKeywords = new Set([
 	"as",

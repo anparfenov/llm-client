@@ -1,15 +1,15 @@
 import styles from "@chat/widgets/MarkdownContent/MarkdownContent.module.css";
+import { parseBlocks } from "@chat/markdown/parseMarkdownBlocks";
+import { tokenizeCode } from "@chat/markdown/tokenizeCode";
 import type {
 	Block,
-	InlineSegment,
+	SyntaxTokenType,
 	TableAlignment,
+} from "@chat/markdown/types";
+import type {
+	InlineSegment,
 	UseMarkdownContentProps,
 } from "@chat/widgets/MarkdownContent/types";
-import { parseBlocks } from "@chat/widgets/MarkdownContent/utils/parseMarkdownBlocks";
-import {
-	tokenizeCode,
-	type SyntaxTokenType,
-} from "@chat/widgets/MarkdownContent/utils/tokenizeCode";
 import { createMemo } from "solid-js";
 import type { JSX } from "solid-js";
 

@@ -1,4 +1,4 @@
-import { parseBlocks } from "../../utils/parseMarkdownBlocks";
+import { parseBlocks } from "../parseMarkdownBlocks";
 import { markdownParsingTestData } from "./fixtures/markdownParsingTestData";
 
 describe("parseBlocks", () => {

@@ -1,4 +1,4 @@
-import type { Block, TableAlignment } from "../types";
+import type { Block, TableAlignment } from "./types";
 
 // TODO: make streaming markdown parsing
 export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
