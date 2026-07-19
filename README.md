@@ -1,6 +1,6 @@
 # LLM Chat
 
-A local-first chat interface built with Solid and Vite. A small Node server serves the production client and streams chat responses from [Ollama](https://ollama.com/) through a same-origin API proxy.
+A local-first chat interface built with Solid and Vite. A small Node server serves the production client and streams responses from an OpenAI-compatible API or [Ollama](https://ollama.com/) through same-origin proxies.
 
 ## Features
 
@@ -15,12 +15,14 @@ A local-first chat interface built with Solid and Vite. A small Node server serv
 
 - A recent Node.js version with native TypeScript support
 - npm
-- Ollama running locally, or access to a compatible Ollama endpoint
+- Access to an OpenAI-compatible Chat Completions API, or Ollama running locally
 
-The default model is `qwen3.5:4b`. Make sure it is available in Ollama before starting the app:
+OpenAI-compatible mode is the default. Configure a model ID and, when the upstream requires it, an API key before starting the app:
 
 ```sh
-ollama pull qwen3.5:4b
+VITE_OPENAI_DEFAULT_MODEL=your-model \
+OPENAI_API_KEY=your-api-key \
+npm run dev
 ```
 
 ## Getting started
@@ -40,15 +42,29 @@ Environment variables can be supplied when running the relevant command.
 
 | Variable | Default | Description |
 | --- | --- | --- |
+| `VITE_CHAT_PROVIDER` | `openai` | Chat provider: `openai` or `ollama` |
+| `VITE_OPENAI_DEFAULT_MODEL` | Required in OpenAI mode | OpenAI-compatible model displayed and sent by the client |
+| `OPENAI_API_URL` | `https://api.openai.com/v1` | OpenAI-compatible base URL used by the Node proxy |
+| `OPENAI_API_KEY` | Unset | Optional server-only bearer token for the OpenAI-compatible API |
 | `OLLAMA_API_URL` | `http://localhost:11434` | Ollama endpoint used by the Node proxy |
 | `VITE_OLLAMA_DEFAULT_MODEL` | `qwen3.5:4b` | Model displayed and sent by the client |
 | `VITE_CHAT_API_URL` | Same origin | Optional client-side base URL for `/api/chat` |
 | `PORT` | First available from `3000` | Node server port |
 | `CLIENT_PORT` | First available from `5173` | Vite port used by `npm run dev` |
 
-For example:
+For a keyless local OpenAI-compatible server:
 
 ```sh
+VITE_OPENAI_DEFAULT_MODEL=local-model \
+OPENAI_API_URL=http://localhost:8080/v1 \
+npm run dev
+```
+
+To use Ollama instead:
+
+```sh
+ollama pull qwen3.5:4b
+VITE_CHAT_PROVIDER=ollama \
 OLLAMA_API_URL=http://localhost:11434 \
 VITE_OLLAMA_DEFAULT_MODEL=qwen3.5:4b \
 npm run dev
@@ -81,7 +97,7 @@ Then open `http://localhost:3000` unless `PORT` is set.
 src/                    Solid client
   features/chat/        Chat state, API, pages, and widgets
   lib/i18n/             Localization support
-server/index.ts         Static server and streaming Ollama proxy
+server/index.ts         Static server and streaming provider proxies
 scripts/watch.js        Combined development process runner
 ```
 

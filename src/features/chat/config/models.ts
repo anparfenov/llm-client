@@ -1,12 +1,12 @@
-import type { ChatModel } from "@chat/config/types";
+import { resolveChatProviderConfig } from "@chat/config/provider";
 
-export const chatModels: ChatModel[] = [
-	{
-		id: import.meta.env.VITE_OLLAMA_DEFAULT_MODEL || "qwen3.5:4b",
-		label: import.meta.env.VITE_OLLAMA_DEFAULT_MODEL || "qwen3.5:4b",
-	},
-];
+export const chatProvider = resolveChatProviderConfig({
+	VITE_CHAT_PROVIDER: import.meta.env.VITE_CHAT_PROVIDER,
+	VITE_OLLAMA_DEFAULT_MODEL: import.meta.env.VITE_OLLAMA_DEFAULT_MODEL,
+	VITE_OPENAI_DEFAULT_MODEL: import.meta.env.VITE_OPENAI_DEFAULT_MODEL,
+});
 
-export const defaultChatModel = chatModels[0];
+export const chatModels = [chatProvider.model];
+export const defaultChatModel = chatProvider.model;
 
-export const ollamaApiUrl = import.meta.env.VITE_CHAT_API_URL || "";
+export const chatApiUrl = import.meta.env.VITE_CHAT_API_URL || "";

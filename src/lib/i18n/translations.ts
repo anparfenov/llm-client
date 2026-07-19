@@ -20,6 +20,11 @@ export const translations = {
 		conversationLabel: "Conversation",
 		initialAssistantMessage: "Hi. Send a message and I will render it here.",
 		pendingAssistantMessage: "Thinking...",
+		openAIEmptyResponse: "No response received from the OpenAI-compatible API.",
+		openAIConnectionError:
+			"Unable to reach the OpenAI-compatible API. Check its configuration.",
+		openAIRequestError:
+			"The OpenAI-compatible API could not complete the request.",
 		ollamaEmptyResponse: "No response received from Ollama.",
 		ollamaConnectionError: "Unable to reach Ollama. Check that it is running.",
 		ollamaRequestError: "Ollama could not complete the request.",
@@ -46,6 +51,10 @@ export const translations = {
 		initialAssistantMessage:
 			"Привет. Отправьте сообщение, и я покажу его здесь.",
 		pendingAssistantMessage: "Думаю...",
+		openAIEmptyResponse: "Ответ от OpenAI-совместимого API не получен.",
+		openAIConnectionError:
+			"Не удалось подключиться к OpenAI-совместимому API. Проверьте его настройки.",
+		openAIRequestError: "OpenAI-совместимый API не смог выполнить запрос.",
 		ollamaEmptyResponse: "Ответ от Ollama не получен.",
 		ollamaConnectionError:
 			"Не удалось подключиться к Ollama. Проверьте, что она запущена.",

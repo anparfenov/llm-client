@@ -2,6 +2,7 @@ import styles from "@chat/widgets/ChatComposer/ChatComposer.module.css";
 import { useChatComposer } from "@chat/widgets/ChatComposer/hooks/useChatComposer";
 import type { ChatComposerProps } from "@chat/widgets/ChatComposer/types";
 import Send from "lucide-solid/icons/send";
+import { Show } from "solid-js";
 
 export function ChatComposer(props: ChatComposerProps) {
 	const composer = useChatComposer(props, styles);
@@ -22,15 +23,17 @@ export function ChatComposer(props: ChatComposerProps) {
 					onInput={composer.updateDraft}
 					onKeyDown={composer.submitOnEnter}
 				/>
-				<label class={styles.thinkingToggle}>
-					<input
-						type="checkbox"
-						checked={props.isThinkingEnabled}
-						disabled={props.isSubmitting}
-						onChange={composer.updateThinkingMode}
-					/>
-					<span>{composer.labels.thinkingMode()}</span>
-				</label>
+				<Show when={props.isThinkingSupported}>
+					<label class={styles.thinkingToggle}>
+						<input
+							type="checkbox"
+							checked={props.isThinkingEnabled}
+							disabled={props.isSubmitting}
+							onChange={composer.updateThinkingMode}
+						/>
+						<span>{composer.labels.thinkingMode()}</span>
+					</label>
+				</Show>
 				<button
 					class={styles.sendButton}
 					type="submit"

@@ -21,6 +21,31 @@ export type OllamaChatResponse = {
 	error?: string;
 };
 
+export type OpenAIChatMessage = {
+	role: "user" | "assistant" | "system";
+	content: string;
+};
+
+export type OpenAIChatRequest = {
+	model: string;
+	messages: OpenAIChatMessage[];
+	stream: boolean;
+};
+
+export type OpenAIChatResponse = {
+	choices?: Array<{
+		message?: { content?: string | null };
+	}>;
+	error?: { message?: string };
+};
+
+export type OpenAIChatStreamChunk = {
+	choices?: Array<{
+		delta?: { content?: string | null };
+	}>;
+	error?: { message?: string };
+};
+
 export type SubmitChatRequest = {
 	apiUrl: string;
 	model: string;

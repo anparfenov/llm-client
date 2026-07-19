@@ -43,6 +43,7 @@ export function ChatPage() {
 					isSubmitting={chat.isSubmitting()}
 					isSidebarCollapsed={isChatListCollapsed()}
 					isThinkingEnabled={chat.isThinkingEnabled()}
+					isThinkingSupported={chat.isThinkingSupported}
 					onDraftChange={chat.setDraft}
 					onSendMessage={chat.sendMessage}
 					onThinkingEnabledChange={chat.setIsThinkingEnabled}

@@ -13,6 +13,8 @@ const distDir = join(projectRoot, "dist");
 
 const port = Number(process.env.PORT || 3000);
 const ollamaApiUrl = process.env.OLLAMA_API_URL || "http://localhost:11434";
+const openAIApiUrl = process.env.OPENAI_API_URL || "https://api.openai.com/v1";
+const openAIApiKey = process.env.OPENAI_API_KEY;
 const clientDevServerUrl = process.env.CLIENT_DEV_SERVER_URL;
 const maxBodySize = 1024 * 1024;
 
@@ -33,7 +35,17 @@ const server = createServer(async (request, response) => {
 		const url = new URL(request.url || "/", getRequestOrigin(request));
 
 		if (url.pathname === "/api/chat") {
-			await proxyOllamaChat(request, response);
+			await proxyChat(request, response, {
+				url: joinApiUrl(ollamaApiUrl, "api/chat"),
+			});
+			return;
+		}
+
+		if (url.pathname === "/api/openai/chat") {
+			await proxyChat(request, response, {
+				url: joinApiUrl(openAIApiUrl, "chat/completions"),
+				authorization: openAIApiKey ? `Bearer ${openAIApiKey}` : undefined,
+			});
 			return;
 		}
 
@@ -52,15 +64,19 @@ const server = createServer(async (request, response) => {
 server.listen(port, () => {
 	console.log(`Server listening at http://localhost:${port}`);
 	console.log(`Proxying Ollama chat requests to ${ollamaApiUrl}/api/chat`);
+	console.log(
+		`Proxying OpenAI-compatible chat requests to ${joinApiUrl(openAIApiUrl, "chat/completions")}`,
+	);
 
 	if (clientDevServerUrl) {
 		console.log(`Forwarding client routes to ${clientDevServerUrl}`);
 	}
 });
 
-async function proxyOllamaChat(
+async function proxyChat(
 	request: IncomingMessage,
 	response: ServerResponse,
+	upstream: { url: string; authorization?: string },
 ): Promise<void> {
 	if (request.method !== "POST") {
 		sendJson(response, 405, { error: "Method not allowed." });
@@ -89,36 +105,46 @@ async function proxyOllamaChat(
 
 	const body = await readRequestBody(request);
 
-	const ollamaResponse = await fetch(`${ollamaApiUrl}/api/chat`, {
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+		"Accept-Encoding": "identity",
+	};
+
+	if (upstream.authorization) {
+		headers.Authorization = upstream.authorization;
+	}
+
+	const upstreamResponse = await fetch(upstream.url, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"Accept-Encoding": "identity",
-		},
+		headers,
 		body,
 	});
 
-	response.writeHead(ollamaResponse.status, {
+	response.writeHead(upstreamResponse.status, {
 		"Cache-Control": "no-store",
 		"Content-Type":
-			ollamaResponse.headers.get("content-type") ||
+			upstreamResponse.headers.get("content-type") ||
 			"application/json; charset=utf-8",
 		"X-Accel-Buffering": "no",
 	});
 	response.flushHeaders();
 
-	if (!ollamaResponse.body) {
+	if (!upstreamResponse.body) {
 		response.end();
 		return;
 	}
 
-	for await (const chunk of ollamaResponse.body) {
+	for await (const chunk of upstreamResponse.body) {
 		if (!response.write(chunk)) {
 			await waitForDrain(response);
 		}
 	}
 
 	response.end();
+}
+
+function joinApiUrl(baseUrl: string, path: string): string {
+	return `${baseUrl.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 }
 
 function waitForDrain(response: ServerResponse): Promise<void> {

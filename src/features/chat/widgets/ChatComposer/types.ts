@@ -3,6 +3,7 @@ export type ChatComposerProps = {
 	isSubmitting: boolean;
 	isSidebarCollapsed: boolean;
 	isThinkingEnabled: boolean;
+	isThinkingSupported: boolean;
 	onDraftChange: (draft: string) => void;
 	onSendMessage: () => Promise<void>;
 	onThinkingEnabledChange: (enabled: boolean) => void;

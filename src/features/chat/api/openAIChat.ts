@@ -1,25 +1,26 @@
-import type {
-	OllamaChatMessage,
-	OllamaChatRequest,
-	OllamaChatResponse,
-	SubmitChatRequest,
-	SubmitChatResponse,
-} from "@chat/api/types";
 import {
 	createStreamDeltaBuffer,
 	nextAnimationFrame,
 } from "@chat/api/streaming";
+import type {
+	OpenAIChatMessage,
+	OpenAIChatRequest,
+	OpenAIChatResponse,
+	OpenAIChatStreamChunk,
+	SubmitChatRequest,
+	SubmitChatResponse,
+} from "@chat/api/types";
 
 const streamDeltaBufferMs = 200;
 
-export async function submitOllamaChatMessage(
+export async function submitOpenAIChatMessage(
 	request: SubmitChatRequest,
 ): Promise<SubmitChatResponse> {
 	let response: Response;
 	const stream = request.stream ?? false;
 
 	try {
-		response = await fetch(`${request.apiUrl}/api/chat`, {
+		response = await fetch(`${request.apiUrl}/api/openai/chat`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -32,13 +33,12 @@ export async function submitOllamaChatMessage(
 						(message) =>
 							message.status !== "pending" && message.status !== "error",
 					)
-					.map(toOllamaMessage),
+					.map(toOpenAIMessage),
 				stream,
-				think: request.think,
-			} satisfies OllamaChatRequest),
+			} satisfies OpenAIChatRequest),
 		});
 	} catch (error) {
-		console.error("Unable to reach Ollama.", error);
+		console.error("Unable to reach the OpenAI-compatible API.", error);
 
 		return {
 			content: request.connectionErrorContent,
@@ -47,15 +47,15 @@ export async function submitOllamaChatMessage(
 	}
 
 	if (stream) {
-		return readOllamaStreamResponse(response, request);
+		return readOpenAIStreamResponse(response, request);
 	}
 
-	const data = await readOllamaResponse(response);
+	const data = await readOpenAIResponse(response);
 
 	if (!response.ok) {
 		console.error(
-			"Ollama chat request failed.",
-			data?.error || response.statusText,
+			"OpenAI-compatible chat request failed.",
+			data?.error?.message || response.statusText,
 		);
 
 		return {
@@ -64,35 +64,27 @@ export async function submitOllamaChatMessage(
 		};
 	}
 
-	if (!data) {
-		return {
-			content: request.fallbackContent,
-		};
-	}
+	const content = data?.choices?.[0]?.message?.content;
 
-	if (data.done !== true) {
-		console.warn("Ollama response did not complete.", data);
-	}
-
-	if (!data.message?.content) {
-		console.warn("Ollama returned an empty response.", data);
+	if (!content) {
+		console.warn("The OpenAI-compatible API returned an empty response.");
 	}
 
 	return {
-		content: data.message?.content || request.fallbackContent,
+		content: content || request.fallbackContent,
 	};
 }
 
-async function readOllamaStreamResponse(
+async function readOpenAIStreamResponse(
 	response: Response,
 	request: SubmitChatRequest,
 ): Promise<SubmitChatResponse> {
 	if (!response.ok) {
-		const data = await readOllamaResponse(response);
+		const data = await readOpenAIResponse(response);
 
 		console.error(
-			"Ollama chat request failed.",
-			data?.error || response.statusText,
+			"OpenAI-compatible chat request failed.",
+			data?.error?.message || response.statusText,
 		);
 
 		return {
@@ -102,43 +94,37 @@ async function readOllamaStreamResponse(
 	}
 
 	if (!response.body) {
-		console.warn("Ollama returned an empty HTTP response.", response.status);
+		console.warn("The OpenAI-compatible API returned an empty HTTP response.");
 
-		return {
-			content: request.fallbackContent,
-		};
+		return { content: request.fallbackContent };
 	}
 
 	const reader = response.body.getReader();
 	const decoder = new TextDecoder();
+	const deltaBuffer = createStreamDeltaBuffer(request, streamDeltaBufferMs);
 	let buffer = "";
 	let content = "";
-	let thinking = "";
 	let streamErrorContent = "";
-	const deltaBuffer = createStreamDeltaBuffer(request, streamDeltaBufferMs);
 
 	const readLine = (line: string) => {
-		const data = parseOllamaJsonLine(line);
+		const event = parseOpenAIStreamLine(line);
 
-		if (!data) {
+		if (!event || event === "done") {
 			return;
 		}
 
-		const delta = data.message?.content ?? "";
-		const thinkingDelta = data.message?.thinking ?? "";
+		const delta = event.choices?.[0]?.delta?.content ?? "";
 
 		if (delta) {
 			content += delta;
 			deltaBuffer.addContent(delta);
 		}
 
-		if (thinkingDelta) {
-			thinking += thinkingDelta;
-			deltaBuffer.addThinking(thinkingDelta);
-		}
-
-		if (data.error) {
-			console.error("Ollama stream returned an error.", data.error);
+		if (event.error) {
+			console.error(
+				"OpenAI-compatible stream returned an error.",
+				event.error.message,
+			);
 			streamErrorContent = request.requestErrorContent;
 		}
 	};
@@ -162,12 +148,11 @@ async function readOllamaStreamResponse(
 			await nextAnimationFrame();
 		}
 	} catch (error) {
-		console.error("Unable to read Ollama stream.", error);
+		console.error("Unable to read the OpenAI-compatible stream.", error);
 		deltaBuffer.flush();
 
 		return {
 			content: content || request.connectionErrorContent,
-			thinking,
 			isError: true,
 		};
 	}
@@ -181,58 +166,67 @@ async function readOllamaStreamResponse(
 	deltaBuffer.flush();
 
 	if (!content) {
-		console.warn("Ollama returned an empty streamed response.");
+		console.warn("The OpenAI-compatible API returned an empty stream.");
 	}
 
 	return {
-		content:
-			content ||
-			streamErrorContent ||
-			(thinking ? "" : request.fallbackContent),
-		thinking,
+		content: content || streamErrorContent || request.fallbackContent,
 		isError: Boolean(streamErrorContent && !content),
 	};
 }
 
-async function readOllamaResponse(
+async function readOpenAIResponse(
 	response: Response,
-): Promise<OllamaChatResponse | null> {
+): Promise<OpenAIChatResponse | null> {
 	const text = await response.text();
 
 	if (!text.trim()) {
-		console.warn("Ollama returned an empty HTTP response.", response.status);
-
 		return null;
 	}
 
 	try {
-		return JSON.parse(text) as OllamaChatResponse;
+		return JSON.parse(text) as OpenAIChatResponse;
 	} catch (error) {
-		console.error("Ollama returned invalid JSON.", error);
+		console.error("The OpenAI-compatible API returned invalid JSON.", error);
 
 		return null;
 	}
 }
 
-function parseOllamaJsonLine(line: string): OllamaChatResponse | null {
+export function parseOpenAIStreamLine(
+	line: string,
+): OpenAIChatStreamChunk | "done" | null {
 	const trimmedLine = line.trim();
 
-	if (!trimmedLine) {
+	if (!trimmedLine.startsWith("data:")) {
 		return null;
 	}
 
+	const data = trimmedLine.slice(5).trim();
+
+	if (!data) {
+		return null;
+	}
+
+	if (data === "[DONE]") {
+		return "done";
+	}
+
 	try {
-		return JSON.parse(trimmedLine) as OllamaChatResponse;
+		return JSON.parse(data) as OpenAIChatStreamChunk;
 	} catch (error) {
-		console.error("Ollama returned an invalid stream chunk.", error);
+		console.error(
+			"The OpenAI-compatible API returned an invalid event.",
+			error,
+		);
 
 		return null;
 	}
 }
 
-function toOllamaMessage(
+function toOpenAIMessage(
 	message: SubmitChatRequest["messages"][number],
-): OllamaChatMessage {
+): OpenAIChatMessage {
 	return {
 		role: message.role,
 		content: message.content,

@@ -1,5 +1,9 @@
-import { submitOllamaChatMessage } from "@chat/api/ollamaChat";
-import { defaultChatModel, ollamaApiUrl } from "@chat/config/models";
+import { submitChatMessage } from "@chat/api/chat";
+import {
+	chatApiUrl,
+	chatProvider,
+	defaultChatModel,
+} from "@chat/config/models";
 import { createInitialMessages } from "@chat/data/initialMessages";
 import type { ChatTranslate } from "@chat/hooks/types";
 import type { Message, SavedChat } from "@chat/types";
@@ -103,15 +107,16 @@ export function useChat() {
 		setDraft("");
 		setIsSubmitting(true);
 
-		const response = await submitOllamaChatMessage({
-			apiUrl: ollamaApiUrl,
+		const errorContent = getProviderErrorContent(chatProvider.id, t);
+		const response = await submitChatMessage(chatProvider.id, {
+			apiUrl: chatApiUrl,
 			model: selectedModel(),
 			messages,
 			stream: true,
-			fallbackContent: t("ollamaEmptyResponse"),
-			connectionErrorContent: t("ollamaConnectionError"),
-			requestErrorContent: t("ollamaRequestError"),
-			think: isThinkingEnabled(),
+			fallbackContent: errorContent.empty,
+			connectionErrorContent: errorContent.connection,
+			requestErrorContent: errorContent.request,
+			think: chatProvider.supportsThinking && isThinkingEnabled(),
 			onContentDelta: (delta) => {
 				updatePendingMessage(pendingMessageId, (message) => ({
 					...message,
@@ -205,6 +210,7 @@ export function useChat() {
 		draft,
 		isSubmitting,
 		isThinkingEnabled,
+		isThinkingSupported: chatProvider.supportsThinking,
 		setDraft,
 		setIsThinkingEnabled,
 		sendMessage,
@@ -213,6 +219,23 @@ export function useChat() {
 		renameChat,
 		removeChat,
 	};
+}
+
+function getProviderErrorContent(
+	provider: "ollama" | "openai",
+	t: ChatTranslate,
+): { empty: string; connection: string; request: string } {
+	return provider === "openai"
+		? {
+				empty: t("openAIEmptyResponse"),
+				connection: t("openAIConnectionError"),
+				request: t("openAIRequestError"),
+			}
+		: {
+				empty: t("ollamaEmptyResponse"),
+				connection: t("ollamaConnectionError"),
+				request: t("ollamaRequestError"),
+			};
 }
 
 function loadSavedChats(t: ChatTranslate): SavedChat[] {
