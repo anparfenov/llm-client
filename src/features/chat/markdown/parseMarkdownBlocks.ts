@@ -1,13 +1,43 @@
 import type { Block, TableAlignment } from "./types";
 
 export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
+	return parseBlockEntries(markdown, isStreaming).entries.map(
+		(entry) => entry.block,
+	);
+}
+
+export type ParsedBlockEntry = {
+	block: Block;
+	start: number;
+	end: number;
+};
+
+export type ParsedBlockEntries = {
+	entries: ParsedBlockEntry[];
+	source: string;
+};
+
+export function parseBlockEntries(
+	markdown: string,
+	isStreaming: boolean,
+): ParsedBlockEntries {
+	const source = markdown.replace(/\r\n?/g, "\n");
+
 	if (!markdown) {
-		return [];
+		return { entries: [], source };
 	}
 
-	const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
-	const blocks: Block[] = [];
+	const lines = source.split("\n");
+	const lineOffsets = getLineOffsets(lines);
+	const entries: ParsedBlockEntry[] = [];
 	let index = 0;
+	const pushBlock = (block: Block, start: number, end: number) => {
+		entries.push({
+			block,
+			start: lineOffsets[start] ?? source.length,
+			end: lineOffsets[end] ?? source.length,
+		});
+	};
 
 	while (index < lines.length) {
 		const line = lines[index];
@@ -20,6 +50,7 @@ export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
 		const fenceMatch = line.match(/^```\s*(\S*)?.*$/);
 
 		if (fenceMatch) {
+			const start = index;
 			const codeLines: string[] = [];
 			index += 1;
 
@@ -30,12 +61,16 @@ export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
 
 			const hasClosingFence = index < lines.length;
 
-			blocks.push({
-				type: "code",
-				language: fenceMatch[1] || undefined,
-				code: codeLines.join("\n"),
-				isOpen: isStreaming && !hasClosingFence,
-			});
+			pushBlock(
+				{
+					type: "code",
+					language: fenceMatch[1] || undefined,
+					code: codeLines.join("\n"),
+					isOpen: isStreaming && !hasClosingFence,
+				},
+				start,
+				index + (hasClosingFence ? 1 : 0),
+			);
 			index += hasClosingFence ? 1 : 0;
 			continue;
 		}
@@ -43,11 +78,15 @@ export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
 		const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
 
 		if (headingMatch) {
-			blocks.push({
-				type: "heading",
-				depth: headingMatch[1].length,
-				content: headingMatch[2],
-			});
+			pushBlock(
+				{
+					type: "heading",
+					depth: headingMatch[1].length,
+					content: headingMatch[2],
+				},
+				index,
+				index + 1,
+			);
 			index += 1;
 			continue;
 		}
@@ -55,12 +94,13 @@ export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
 		const table = parseTable(lines, index);
 
 		if (table) {
-			blocks.push(table.block);
+			pushBlock(table.block, index, table.nextIndex);
 			index = table.nextIndex;
 			continue;
 		}
 
 		if (isListLine(line)) {
+			const start = index;
 			const ordered = isOrderedListLine(line);
 			const items: string[] = [];
 
@@ -77,11 +117,12 @@ export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
 				index += 1;
 			}
 
-			blocks.push({ type: "list", ordered, items });
+			pushBlock({ type: "list", ordered, items }, start, index);
 			continue;
 		}
 
 		if (line.startsWith(">")) {
+			const start = index;
 			const content: string[] = [];
 
 			while (index < lines.length && lines[index]?.startsWith(">")) {
@@ -89,10 +130,11 @@ export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
 				index += 1;
 			}
 
-			blocks.push({ type: "blockquote", content });
+			pushBlock({ type: "blockquote", content }, start, index);
 			continue;
 		}
 
+		const start = index;
 		const paragraphLines: string[] = [];
 
 		while (
@@ -109,10 +151,26 @@ export function parseBlocks(markdown: string, isStreaming: boolean): Block[] {
 			index += 1;
 		}
 
-		blocks.push({ type: "paragraph", content: paragraphLines.join("\n") });
+		pushBlock(
+			{ type: "paragraph", content: paragraphLines.join("\n") },
+			start,
+			index,
+		);
 	}
 
-	return blocks;
+	return { entries, source };
+}
+
+function getLineOffsets(lines: string[]): number[] {
+	const offsets: number[] = [];
+	let offset = 0;
+
+	for (const line of lines) {
+		offsets.push(offset);
+		offset += line.length + 1;
+	}
+
+	return offsets;
 }
 
 function startsBlock(line: string, nextLine?: string): boolean {

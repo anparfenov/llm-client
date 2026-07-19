@@ -20,7 +20,7 @@ export function resolveChatProviderConfig(
 		return {
 			id: provider,
 			model: { id: model, label: model },
-			supportsThinking: false,
+			supportsThinking: true,
 		};
 	}
 

@@ -48,7 +48,7 @@ Environment variables can be supplied when running the relevant command.
 | `OPENAI_API_KEY` | Unset | Optional server-only bearer token for the OpenAI-compatible API |
 | `OLLAMA_API_URL` | `http://localhost:11434` | Ollama endpoint used by the Node proxy |
 | `VITE_OLLAMA_DEFAULT_MODEL` | `qwen3.5:4b` | Model displayed and sent by the client |
-| `VITE_CHAT_API_URL` | Same origin | Optional client-side base URL for `/api/chat` |
+| `VITE_CHAT_API_URL` | Same origin | Optional client-side base URL for `/api/chat` and `/chat/completions` |
 | `PORT` | First available from `3000` | Node server port |
 | `CLIENT_PORT` | First available from `5173` | Vite port used by `npm run dev` |
 
@@ -59,6 +59,11 @@ VITE_OPENAI_DEFAULT_MODEL=local-model \
 OPENAI_API_URL=http://localhost:8080/v1 \
 npm run dev
 ```
+
+The OpenAI-compatible client targets llama.cpp's Chat Completions API. Requests
+use Server-Sent Events when streaming, and supported model reasoning is displayed
+through the composer thinking toggle. Set `OPENAI_API_URL` to the llama.cpp API
+base, including `/v1` when required by your server configuration.
 
 To use Ollama instead:
 

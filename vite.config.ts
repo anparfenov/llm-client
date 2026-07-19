@@ -21,6 +21,13 @@ export default defineConfig({
 					origin: process.env.CHAT_PROXY_TARGET || "http://localhost:3000",
 				},
 			},
+			"/chat/completions": {
+				target: process.env.CHAT_PROXY_TARGET || "http://localhost:3000",
+				changeOrigin: true,
+				headers: {
+					origin: process.env.CHAT_PROXY_TARGET || "http://localhost:3000",
+				},
+			},
 		},
 	},
 });

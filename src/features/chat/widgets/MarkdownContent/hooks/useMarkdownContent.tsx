@@ -1,5 +1,5 @@
 import styles from "@chat/widgets/MarkdownContent/MarkdownContent.module.css";
-import { parseBlocks } from "@chat/markdown/parseMarkdownBlocks";
+import { parseBlockEntries } from "@chat/markdown/parseMarkdownBlocks";
 import { tokenizeCode } from "@chat/markdown/tokenizeCode";
 import type {
 	Block,
@@ -14,16 +14,49 @@ import { createMemo } from "solid-js";
 import type { JSX } from "solid-js";
 
 export function useMarkdownContent(props: UseMarkdownContentProps) {
-	let parsedContentLength = 0;
-	const blocks = createMemo<Block[]>((existingBlocks) => {
+	let previousContent = "";
+	let committedBlocks: Block[] = [];
+	let pendingContent = "";
+	const blocks = createMemo<Block[]>(() => {
 		const content = props.content;
-		const newContent = content.slice(parsedContentLength);
+		const isStreaming = props.isStreaming ?? false;
 
-		parsedContentLength = content.length;
+		if (!content.startsWith(previousContent)) {
+			committedBlocks = [];
+			pendingContent = content;
+		} else {
+			pendingContent += content.slice(previousContent.length);
+		}
 
-		const newBlocks = parseBlocks(newContent, props.isStreaming ?? false);
+		previousContent = content;
 
-		return existingBlocks.concat(newBlocks);
+		const parsed = parseBlockEntries(pendingContent, isStreaming);
+		const parsedBlocks = parsed.entries.map((entry) => entry.block);
+		let nextBlocks = committedBlocks.concat(parsedBlocks);
+
+		if (!isStreaming) {
+			committedBlocks = nextBlocks;
+			pendingContent = "";
+		} else if (parsed.entries.length > 1) {
+			const lastEntry = parsed.entries.at(-1);
+
+			committedBlocks = committedBlocks.concat(parsedBlocks.slice(0, -1));
+			pendingContent = lastEntry
+				? parsed.source.slice(lastEntry.start)
+				: parsed.source;
+			nextBlocks = committedBlocks.concat(lastEntry ? [lastEntry.block] : []);
+		} else if (parsed.entries.length === 1) {
+			pendingContent = parsed.source.slice(parsed.entries[0].start);
+		} else {
+			pendingContent = parsed.source;
+		}
+
+		if (import.meta.env.DEV) {
+			console.log("Markdown content:", content);
+			console.log("Markdown blocks:", nextBlocks);
+		}
+
+		return nextBlocks;
 	}, []);
 
 	return {

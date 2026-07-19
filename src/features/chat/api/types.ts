@@ -30,18 +30,27 @@ export type OpenAIChatRequest = {
 	model: string;
 	messages: OpenAIChatMessage[];
 	stream: boolean;
+	chat_template_kwargs: {
+		enable_thinking: boolean;
+	};
 };
 
 export type OpenAIChatResponse = {
 	choices?: Array<{
-		message?: { content?: string | null };
+		message?: {
+			content?: string | null;
+			reasoning_content?: string | null;
+		};
 	}>;
 	error?: { message?: string };
 };
 
 export type OpenAIChatStreamChunk = {
 	choices?: Array<{
-		delta?: { content?: string | null };
+		delta?: {
+			content?: string | null;
+			reasoning_content?: string | null;
+		};
 	}>;
 	error?: { message?: string };
 };

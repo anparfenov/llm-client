@@ -9,7 +9,7 @@ describe("resolveChatProviderConfig", () => {
 		).toEqual({
 			id: "openai",
 			model: { id: "compatible-model", label: "compatible-model" },
-			supportsThinking: false,
+			supportsThinking: true,
 		});
 	});
 

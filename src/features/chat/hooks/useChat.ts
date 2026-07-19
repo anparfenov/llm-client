@@ -36,13 +36,15 @@ export function useChat() {
 	const appendMessage = (message: Message) => {
 		const chatIndex = findActiveChatIndex();
 
-		setMessages(messages.length, message);
+		setMessages(messages.length, { ...message });
 
 		if (chatIndex === -1) {
 			return;
 		}
 
-		setChats(chatIndex, "messages", chats[chatIndex].messages.length, message);
+		setChats(chatIndex, "messages", chats[chatIndex].messages.length, {
+			...message,
+		});
 		setChats(chatIndex, "updatedAt", Date.now());
 	};
 
@@ -72,10 +74,12 @@ export function useChat() {
 			return;
 		}
 
-		setMessages(messageIndex, getUpdate);
+		const updatedMessage = getUpdate(messages[messageIndex]);
+
+		setMessages(messageIndex, updatedMessage);
 
 		if (chatIndex !== -1) {
-			setChats(chatIndex, "messages", messageIndex, getUpdate);
+			setChats(chatIndex, "messages", messageIndex, { ...updatedMessage });
 			setChats(chatIndex, "updatedAt", Date.now());
 		}
 	};

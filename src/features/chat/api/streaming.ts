@@ -51,3 +51,48 @@ export function createStreamDeltaBuffer(
 		flush,
 	};
 }
+
+export function createAnimationFrameDeltaBuffer(request: SubmitChatRequest): {
+	addContent: (delta: string) => void;
+	addThinking: (delta: string) => void;
+	flush: () => void;
+} {
+	let contentDelta = "";
+	let thinkingDelta = "";
+	let flushScheduled = false;
+
+	const flush = () => {
+		flushScheduled = false;
+
+		if (contentDelta) {
+			request.onContentDelta?.(contentDelta);
+			contentDelta = "";
+		}
+
+		if (thinkingDelta) {
+			request.onThinkingDelta?.(thinkingDelta);
+			thinkingDelta = "";
+		}
+	};
+
+	const scheduleFlush = () => {
+		if (flushScheduled) {
+			return;
+		}
+
+		flushScheduled = true;
+		requestAnimationFrame(flush);
+	};
+
+	return {
+		addContent: (delta: string) => {
+			contentDelta += delta;
+			scheduleFlush();
+		},
+		addThinking: (delta: string) => {
+			thinkingDelta += delta;
+			scheduleFlush();
+		},
+		flush,
+	};
+}

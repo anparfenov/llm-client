@@ -22,27 +22,39 @@ describe("submitOpenAIChatMessage", () => {
 	});
 
 	it("reads a non-streamed chat completion", async () => {
-		const fetchMock = vi
-			.fn()
-			.mockResolvedValue(
-				new Response(
-					JSON.stringify({ choices: [{ message: { content: "Hello back" } }] }),
-					{ status: 200 },
-				),
-			);
+		const fetchMock = vi.fn().mockResolvedValue(
+			new Response(
+				JSON.stringify({
+					choices: [
+						{
+							message: {
+								content: "Hello back",
+								reasoning_content: "Considered it",
+							},
+						},
+					],
+				}),
+				{ status: 200 },
+			),
+		);
 		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(submitOpenAIChatMessage(request)).resolves.toEqual({
 			content: "Hello back",
+			thinking: "Considered it",
 		});
 		expect(fetchMock).toHaveBeenCalledWith(
-			"/api/openai/chat",
+			"/chat/completions",
 			expect.objectContaining({
 				method: "POST",
+				headers: expect.objectContaining({
+					Accept: "application/json",
+				}),
 				body: JSON.stringify({
 					model: "compatible-model",
 					messages: [{ role: "user", content: "Hello" }],
 					stream: false,
+					chat_template_kwargs: { enable_thinking: false },
 				}),
 			}),
 		);
@@ -57,31 +69,104 @@ describe("submitOpenAIChatMessage", () => {
 				);
 				controller.enqueue(
 					encoder.encode(
-						'lo"}}]}\n\ndata: {"choices":[{"delta":{"content":"!"}}]}\n\ndata: [DONE]\n\n',
+						'lo","reasoning_content":"Think"}}]}\n\ndata: {"choices":[{"delta":{"content":"!"}}]}\n\ndata: [DONE]\n\n',
 					),
 				);
 				controller.close();
 			},
 		});
 		const onContentDelta = vi.fn();
+		const onThinkingDelta = vi.fn();
+		const fetchMock = vi
+			.fn()
+			.mockResolvedValue(new Response(stream, { status: 200 }));
 
 		vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
 			callback(0);
 			return 1;
 		});
-		vi.stubGlobal(
-			"fetch",
-			vi.fn().mockResolvedValue(new Response(stream, { status: 200 })),
-		);
+		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(
 			submitOpenAIChatMessage({
 				...request,
 				stream: true,
+				think: true,
 				onContentDelta,
+				onThinkingDelta,
 			}),
-		).resolves.toEqual({ content: "Hello!", isError: false });
-		expect(onContentDelta).toHaveBeenCalledWith("Hello!");
+		).resolves.toEqual({
+			content: "Hello!",
+			thinking: "Think",
+			isError: false,
+		});
+		expect(onContentDelta).toHaveBeenNthCalledWith(1, "Hello");
+		expect(onContentDelta).toHaveBeenNthCalledWith(2, "!");
+		expect(onThinkingDelta).toHaveBeenCalledWith("Think");
+		expect(fetchMock).toHaveBeenCalledWith(
+			"/chat/completions",
+			expect.objectContaining({
+				headers: expect.objectContaining({ Accept: "text/event-stream" }),
+				body: expect.stringContaining(
+					'"chat_template_kwargs":{"enable_thinking":true}',
+				),
+			}),
+		);
+	});
+
+	it("publishes SSE content before the response stream closes", async () => {
+		const encoder = new TextEncoder();
+		let streamClosed = false;
+		let resolveFirstDelta: (() => void) | undefined;
+		const firstDelta = new Promise<void>((resolve) => {
+			resolveFirstDelta = resolve;
+		});
+		const stream = new ReadableStream({
+			start(controller) {
+				controller.enqueue(
+					encoder.encode(
+						'data: {"choices":[{"delta":{"content":"First"}}]}\n\n',
+					),
+				);
+
+				setTimeout(() => {
+					controller.enqueue(
+						encoder.encode(
+							'data: {"choices":[{"delta":{"content":" second"}}]}\n\ndata: [DONE]\n\n',
+						),
+					);
+					controller.close();
+					streamClosed = true;
+				}, 20);
+			},
+		});
+		const onContentDelta = vi.fn(() => resolveFirstDelta?.());
+
+		vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) =>
+			setTimeout(() => callback(0), 0),
+		);
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue(
+				new Response(stream, {
+					status: 200,
+					headers: { "Content-Type": "text/event-stream" },
+				}),
+			),
+		);
+
+		const response = submitOpenAIChatMessage({
+			...request,
+			stream: true,
+			onContentDelta,
+		});
+
+		await firstDelta;
+		expect(streamClosed).toBe(false);
+		await expect(response).resolves.toEqual({
+			content: "First second",
+			isError: false,
+		});
 	});
 
 	it("uses fallback content for an empty completion", async () => {

@@ -41,7 +41,7 @@ const server = createServer(async (request, response) => {
 			return;
 		}
 
-		if (url.pathname === "/api/openai/chat") {
+		if (url.pathname === "/chat/completions") {
 			await proxyChat(request, response, {
 				url: joinApiUrl(openAIApiUrl, "chat/completions"),
 				authorization: openAIApiKey ? `Bearer ${openAIApiKey}` : undefined,
@@ -106,6 +106,7 @@ async function proxyChat(
 	const body = await readRequestBody(request);
 
 	const headers: Record<string, string> = {
+		Accept: getFirstHeaderValue(request.headers.accept) || "application/json",
 		"Content-Type": "application/json",
 		"Accept-Encoding": "identity",
 	};

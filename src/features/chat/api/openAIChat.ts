@@ -1,5 +1,5 @@
 import {
-	createStreamDeltaBuffer,
+	createAnimationFrameDeltaBuffer,
 	nextAnimationFrame,
 } from "@chat/api/streaming";
 import type {
@@ -11,8 +11,6 @@ import type {
 	SubmitChatResponse,
 } from "@chat/api/types";
 
-const streamDeltaBufferMs = 200;
-
 export async function submitOpenAIChatMessage(
 	request: SubmitChatRequest,
 ): Promise<SubmitChatResponse> {
@@ -20,9 +18,10 @@ export async function submitOpenAIChatMessage(
 	const stream = request.stream ?? false;
 
 	try {
-		response = await fetch(`${request.apiUrl}/api/openai/chat`, {
+		response = await fetch(`${request.apiUrl}/chat/completions`, {
 			method: "POST",
 			headers: {
+				Accept: stream ? "text/event-stream" : "application/json",
 				"Content-Type": "application/json",
 				"X-CSRF-Protection": "1",
 			},
@@ -35,6 +34,9 @@ export async function submitOpenAIChatMessage(
 					)
 					.map(toOpenAIMessage),
 				stream,
+				chat_template_kwargs: {
+					enable_thinking: request.think,
+				},
 			} satisfies OpenAIChatRequest),
 		});
 	} catch (error) {
@@ -64,14 +66,17 @@ export async function submitOpenAIChatMessage(
 		};
 	}
 
-	const content = data?.choices?.[0]?.message?.content;
+	const message = data?.choices?.[0]?.message;
+	const content = message?.content;
+	const thinking = message?.reasoning_content || undefined;
 
 	if (!content) {
 		console.warn("The OpenAI-compatible API returned an empty response.");
 	}
 
 	return {
-		content: content || request.fallbackContent,
+		content: content || (thinking ? "" : request.fallbackContent),
+		...(thinking ? { thinking } : {}),
 	};
 }
 
@@ -101,9 +106,10 @@ async function readOpenAIStreamResponse(
 
 	const reader = response.body.getReader();
 	const decoder = new TextDecoder();
-	const deltaBuffer = createStreamDeltaBuffer(request, streamDeltaBufferMs);
+	const deltaBuffer = createAnimationFrameDeltaBuffer(request);
 	let buffer = "";
 	let content = "";
+	let thinking = "";
 	let streamErrorContent = "";
 
 	const readLine = (line: string) => {
@@ -118,6 +124,13 @@ async function readOpenAIStreamResponse(
 		if (delta) {
 			content += delta;
 			deltaBuffer.addContent(delta);
+		}
+
+		const reasoningDelta = event.choices?.[0]?.delta?.reasoning_content ?? "";
+
+		if (reasoningDelta) {
+			thinking += reasoningDelta;
+			deltaBuffer.addThinking(reasoningDelta);
 		}
 
 		if (event.error) {
@@ -153,6 +166,7 @@ async function readOpenAIStreamResponse(
 
 		return {
 			content: content || request.connectionErrorContent,
+			...(thinking ? { thinking } : {}),
 			isError: true,
 		};
 	}
@@ -170,7 +184,11 @@ async function readOpenAIStreamResponse(
 	}
 
 	return {
-		content: content || streamErrorContent || request.fallbackContent,
+		content:
+			content ||
+			streamErrorContent ||
+			(thinking ? "" : request.fallbackContent),
+		...(thinking ? { thinking } : {}),
 		isError: Boolean(streamErrorContent && !content),
 	};
 }
